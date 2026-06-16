@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "functions": {
+    "api/ai.py": {
+      "runtime": "python3.11"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/ai",
+      "dest": "/api/ai.py"
+    }
+  ]
+}
