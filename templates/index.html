@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Circuitly</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>⚡ Circuitly</h1>
+    <p>AI-powered tech recommendations.</p>
+
+    <div id="chat"></div>
+
+    <div class="input-area">
+        <input id="message" placeholder="Ask about tech products...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+async function sendMessage() {
+    const input = document.getElementById("message");
+    const chat = document.getElementById("chat");
+
+    const message = input.value;
+
+    if (!message) return;
+
+    chat.innerHTML += `<div class="user">${message}</div>`;
+
+    const response = await fetch("/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: message
+        })
+    });
+
+    const data = await response.json();
+
+    if (data.limited) {
+        chat.innerHTML += `
+            <div class="ai">
+                ${data.response}<br><br>
+                <a href="/premium">Buy Premium</a>
+            </div>
+        `;
+    } else {
+        chat.innerHTML += `<div class="ai">${data.response}</div>`;
+    }
+
+    input.value = "";
+    chat.scrollTop = chat.scrollHeight;
+}
+</script>
+
+</body>
+</html>
