@@ -1,228 +1,836 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Curcuitly AI</title>
-<link rel="icon" href="favicon.ico">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curcuitly AI - Tech Product Recommendations</title>
+    <link rel="icon" href="favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background: #0f1117;
-    color: white;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-.container {
-    width: 420px;
-    background: #1a1d25;
-    padding: 20px;
-    border-radius: 12px;
-}
-input, button {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 8px;
-    border: none;
-}
-button {
-    background: #4f7cff;
-    color: white;
-    cursor: pointer;
-}
-button:hover {
-    background: #3a66ff;
-}
-.hidden { display:none; }
-.small { font-size: 12px; opacity: 0.7; }
-a { color: #4f7cff; cursor: pointer; }
-</style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f1117 0%, #1a1d25 100%);
+            color: #e6edf3;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+            background: linear-gradient(135deg, #4f7cff 0%, #7b9eff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #c9d1d9;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            background: #0d1117;
+            color: #e6edf3;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #4f7cff;
+            box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 14px;
+            border: none;
+            border-radius: 8px;
+            background: #4f7cff;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+        }
+
+        button:hover {
+            background: #3a66ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 124, 255, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #4f7cff;
+        }
+
+        button.secondary:hover {
+            background: rgba(79, 124, 255, 0.1);
+            border-color: #4f7cff;
+        }
+
+        .toggle-auth {
+            text-align: center;
+            font-size: 14px;
+            color: #8b949e;
+        }
+
+        .toggle-auth a {
+            color: #4f7cff;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-auth a:hover {
+            color: #7b9eff;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .page {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats-bar {
+            background: #1c2128;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #8b949e;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #4f7cff;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(79, 124, 255, 0.2);
+            color: #4f7cff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .badge.premium {
+            background: rgba(255, 184, 101, 0.2);
+            color: #ffb865;
+        }
+
+        .output-box {
+            background: #1c2128;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #8b949e;
+        }
+
+        .output-box.filled {
+            color: #e6edf3;
+        }
+
+        .output-box.success {
+            background: rgba(79, 124, 255, 0.1);
+            border-color: #4f7cff;
+            color: #79c0ff;
+        }
+
+        .error-message {
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            color: #f85757;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .success-message {
+            background: rgba(79, 124, 255, 0.1);
+            border: 1px solid rgba(79, 124, 255, 0.3);
+            color: #79c0ff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #30363d;
+            margin: 24px 0;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #30363d;
+        }
+
+        .footer-links a {
+            color: #4f7cff;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #7b9eff;
+        }
+
+        .subscription-info {
+            background: rgba(255, 184, 101, 0.1);
+            border: 1px solid rgba(255, 184, 101, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .subscription-info h3 {
+            color: #ffb865;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .subscription-info p {
+            color: #c9d1d9;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .subscription-info .price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffb865;
+            margin: 8px 0;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(79, 124, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #4f7cff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .warning-box {
+            background: rgba(248, 113, 113, 0.1);
+            border-left: 4px solid #f85757;
+            padding: 16px;
+            border-radius: 4px;
+            margin: 20px 0;
+            color: #c9d1d9;
+            font-size: 14px;
+        }
+
+        .warning-box strong {
+            color: #f85757;
+            display: block;
+            margin-bottom: 8px;
+        }
+    </style>
 </head>
-
 <body>
+    <div class="container">
+        <!-- LOGIN PAGE -->
+        <div id="loginPage" class="page">
+            <h1>Curcuitly</h1>
+            <p class="subtitle">AI-Powered Tech Recommendations</p>
 
-<div class="container">
+            <div id="loginError" class="error-message hidden"></div>
 
-<!-- LOGIN -->
-<div id="loginPage">
-    <h2>Curcuitly Login</h2>
-    <input id="loginUser" placeholder="Username">
-    <input id="loginPass" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <p class="small">No account? <a onclick="showSignup()">Sign up</a></p>
-</div>
+            <div class="form-group">
+                <label for="loginUser">Username</label>
+                <input type="text" id="loginUser" placeholder="Enter your username" autocomplete="username">
+            </div>
 
-<!-- SIGNUP -->
-<div id="signupPage" class="hidden">
-    <h2>Sign Up</h2>
-    <input id="suUser" placeholder="Username">
-    <input id="suPass" type="password" placeholder="Password">
-    <button onclick="signup()">Create Account</button>
-    <p class="small"><a onclick="showLogin()">Back to login</a></p>
-</div>
+            <div class="form-group">
+                <label for="loginPass">Password</label>
+                <input type="password" id="loginPass" placeholder="Enter your password" autocomplete="current-password">
+            </div>
 
-<!-- APP -->
-<div id="appPage" class="hidden">
-    <h2>Curcuitly AI</h2>
-    <p class="small">Daily uses left: <span id="usesLeft">15</span></p>
+            <button onclick="login()">Login</button>
 
-    <input id="prompt" placeholder="What tech do you need? (budget, use-case)">
-    <button onclick="askAI()">Ask AI</button>
+            <p class="toggle-auth">
+                Don't have an account? <a onclick="showSignup()">Sign up</a>
+            </p>
+        </div>
 
-    <p id="output"></p>
+        <!-- SIGNUP PAGE -->
+        <div id="signupPage" class="page hidden">
+            <h2>Create Account</h2>
 
-    <hr>
-    <a onclick="openSub()">Subscription</a>
-    <br><br>
-    <a onclick="logout()">Logout</a>
-</div>
+            <div id="signupError" class="error-message hidden"></div>
 
-<!-- SUBSCRIPTION PAGE -->
-<div id="subPage" class="hidden">
-    <h2>Subscription</h2>
-    <p><b>THIS IS A SCHOOL PROJECT, NOT A BUSINESS.</b></p>
-    <p>$10/month unlocks unlimited AI usage (simulated)</p>
-    <button onclick="back()">Back</button>
-</div>
+            <div class="form-group">
+                <label for="suUser">Username</label>
+                <input type="text" id="suUser" placeholder="Choose a username" autocomplete="username">
+            </div>
 
-</div>
+            <div class="form-group">
+                <label for="suPass">Password</label>
+                <input type="password" id="suPass" placeholder="Create a password" autocomplete="new-password">
+            </div>
 
-<script>
-// ---------------- STORAGE HELPERS ----------------
-function getUsers() {
-    return JSON.parse(localStorage.getItem("users") || "{}");
-}
-function saveUsers(u) {
-    localStorage.setItem("users", JSON.stringify(u));
-}
-function hash(str) {
-    return crypto.subtle.digest("SHA-256", new TextEncoder().encode(str))
-    .then(buf => Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''));
-}
-function todayKey() {
-    return "uses_" + new Date().toISOString().slice(0,10);
-}
+            <div class="form-group">
+                <label for="suPassConfirm">Confirm Password</label>
+                <input type="password" id="suPassConfirm" placeholder="Confirm your password" autocomplete="new-password">
+            </div>
 
-// ---------------- NAV ----------------
-function showSignup(){
-    loginPage.classList.add("hidden");
-    signupPage.classList.remove("hidden");
-}
-function showLogin(){
-    signupPage.classList.add("hidden");
-    loginPage.classList.remove("hidden");
-}
-function openSub(){
-    appPage.classList.add("hidden");
-    subPage.classList.remove("hidden");
-}
-function back(){
-    subPage.classList.add("hidden");
-    appPage.classList.remove("hidden");
-}
+            <button onclick="signup()">Create Account</button>
 
-// ---------------- AUTH ----------------
-async function signup(){
-    let u = suUser.value;
-    let p = await hash(suPass.value);
+            <p class="toggle-auth">
+                Already have an account? <a onclick="showLogin()">Login</a>
+            </p>
+        </div>
 
-    let users = getUsers();
-    if(users[u]) return alert("User exists");
+        <!-- APP PAGE -->
+        <div id="appPage" class="page hidden">
+            <h1>Curcuitly</h1>
 
-    users[u] = {pass:p, sub:false};
-    saveUsers(users);
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-label">Daily Uses</div>
+                    <div class="stat-value"><span id="usesLeft">15</span>/15</div>
+                </div>
+                <div class="stat-item">
+                    <div id="subBadge" class="badge">Free Plan</div>
+                </div>
+            </div>
 
-    alert("Account created!");
-    showLogin();
-}
+            <div id="appError" class="error-message hidden"></div>
 
-async function login(){
-    let u = loginUser.value;
-    let p = await hash(loginPass.value);
+            <div class="form-group">
+                <label for="prompt">What tech product are you looking for?</label>
+                <input type="text" id="prompt" placeholder="e.g., microphone under $150, speaker budget $250" autocomplete="off">
+            </div>
 
-    let users = getUsers();
-    if(!users[u] || users[u].pass !== p) {
-        return alert("Invalid login");
-    }
+            <button onclick="askAI()">Ask AI <span id="aiLoadingSpinner"></span></button>
 
-    localStorage.setItem("currentUser", u);
-    loadApp();
-}
+            <div id="output" class="output-box hidden"></div>
 
-// ---------------- APP ----------------
-function logout(){
-    localStorage.removeItem("currentUser");
-    location.reload();
-}
+            <div class="divider"></div>
 
-function loadApp(){
-    loginPage.classList.add("hidden");
-    signupPage.classList.add("hidden");
-    appPage.classList.remove("hidden");
+            <div class="footer-links">
+                <a onclick="openSub()">💎 Premium</a>
+                <a onclick="logout()">Logout</a>
+            </div>
+        </div>
 
-    updateUses();
-}
+        <!-- SUBSCRIPTION PAGE -->
+        <div id="subPage" class="page hidden">
+            <h2>Upgrade to Premium</h2>
 
-function getUses(){
-    let u = localStorage.getItem("currentUser");
-    let key = u + "_" + todayKey();
-    return parseInt(localStorage.getItem(key) || "15");
-}
+            <div class="subscription-info">
+                <h3>Unlimited AI Usage</h3>
+                <p>Get unlimited daily recommendations</p>
+                <div class="price">$10<span style="font-size: 14px; color: #8b949e;">/month</span></div>
+            </div>
 
-function setUses(v){
-    let u = localStorage.getItem("currentUser");
-    let key = u + "_" + todayKey();
-    localStorage.setItem(key, v);
-}
+            <div class="warning-box">
+                <strong>⚠️ Important Notice</strong>
+                This is a school project, not a real business. Payments are simulated for demonstration purposes only.
+            </div>
 
-function updateUses(){
-    usesLeft.innerText = getUses();
-}
+            <div class="form-group">
+                <label for="cardName">Full Name</label>
+                <input type="text" id="cardName" placeholder="John Doe">
+            </div>
 
-async function askAI(){
-    let u = localStorage.getItem("currentUser");
-    let users = getUsers();
+            <div class="form-group">
+                <label for="cardNumber">Card Number</label>
+                <input type="text" id="cardNumber" placeholder="4111 1111 1111 1111" maxlength="19">
+            </div>
 
-    let uses = getUses();
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="form-group">
+                    <label for="cardExp">Expiry (MM/YY)</label>
+                    <input type="text" id="cardExp" placeholder="12/25" maxlength="5">
+                </div>
+                <div class="form-group">
+                    <label for="cardCvc">CVC</label>
+                    <input type="text" id="cardCvc" placeholder="123" maxlength="4">
+                </div>
+            </div>
 
-    if(!users[u].sub && uses <= 0){
-        return alert("Daily limit reached (15 uses). Subscribe for unlimited.");
-    }
+            <button onclick="processPremium()" style="background: #ffb865;">Upgrade to Premium</button>
+            <button onclick="back()" class="secondary">Back to App</button>
+        </div>
+    </div>
 
-    let prompt = document.getElementById("prompt").value;
+    <script>
+        // ==================== STORAGE & CRYPTO ====================
+        function getUsers() {
+            try {
+                return JSON.parse(localStorage.getItem("users") || "{}");
+            } catch {
+                return {};
+            }
+        }
 
-    // decrement usage
-    if(!users[u].sub){
-        setUses(uses - 1);
-        updateUses();
-    }
+        function saveUsers(users) {
+            localStorage.setItem("users", JSON.stringify(users));
+        }
 
-    // CALL YOUR BACKEND (ai.py on Vercel serverless)
-    try {
-        let res = await fetch("/api/ai", {
-            method:"POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({prompt})
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function getTodayKey() {
+            const today = new Date().toISOString().split('T')[0];
+            return `uses_${today}`;
+        }
+
+        function getCurrentUser() {
+            return localStorage.getItem("currentUser");
+        }
+
+        function setCurrentUser(username) {
+            localStorage.setItem("currentUser", username);
+        }
+
+        function clearCurrentUser() {
+            localStorage.removeItem("currentUser");
+        }
+
+        // ==================== ERROR DISPLAY ====================
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            errorEl.textContent = message;
+            errorEl.classList.remove("hidden");
+            setTimeout(() => {
+                errorEl.classList.add("hidden");
+            }, 5000);
+        }
+
+        function clearError(elementId) {
+            const errorEl = document.getElementById(elementId);
+            errorEl.classList.add("hidden");
+        }
+
+        // ==================== PAGE NAVIGATION ====================
+        function showPage(pageId) {
+            document.querySelectorAll(".page").forEach(page => {
+                page.classList.add("hidden");
+            });
+            document.getElementById(pageId).classList.remove("hidden");
+        }
+
+        function showLogin() {
+            clearError("loginError");
+            document.getElementById("loginUser").value = "";
+            document.getElementById("loginPass").value = "";
+            showPage("loginPage");
+        }
+
+        function showSignup() {
+            clearError("signupError");
+            document.getElementById("suUser").value = "";
+            document.getElementById("suPass").value = "";
+            document.getElementById("suPassConfirm").value = "";
+            showPage("signupPage");
+        }
+
+        function openSub() {
+            document.getElementById("cardName").value = "";
+            document.getElementById("cardNumber").value = "";
+            document.getElementById("cardExp").value = "";
+            document.getElementById("cardCvc").value = "";
+            showPage("subPage");
+        }
+
+        function back() {
+            showPage("appPage");
+        }
+
+        // ==================== AUTHENTICATION ====================
+        async function signup() {
+            clearError("signupError");
+            
+            const username = document.getElementById("suUser").value.trim();
+            const password = document.getElementById("suPass").value;
+            const confirmPassword = document.getElementById("suPassConfirm").value;
+
+            // Validation
+            if (!username) {
+                showError("signupError", "❌ Username is required");
+                return;
+            }
+            if (username.length < 3) {
+                showError("signupError", "❌ Username must be at least 3 characters");
+                return;
+            }
+            if (!password) {
+                showError("signupError", "❌ Password is required");
+                return;
+            }
+            if (password.length < 6) {
+                showError("signupError", "❌ Password must be at least 6 characters");
+                return;
+            }
+            if (password !== confirmPassword) {
+                showError("signupError", "❌ Passwords don't match");
+                return;
+            }
+
+            const users = getUsers();
+            if (users[username]) {
+                showError("signupError", "❌ Username already exists");
+                return;
+            }
+
+            const hashedPassword = await hashPassword(password);
+            users[username] = {
+                password: hashedPassword,
+                premium: false,
+                premiumExpiry: null,
+                createdAt: new Date().toISOString()
+            };
+
+            saveUsers(users);
+            
+            showError("signupError", "✅ Account created! Logging in...");
+            setTimeout(() => {
+                setCurrentUser(username);
+                loadApp();
+            }, 1500);
+        }
+
+        async function login() {
+            clearError("loginError");
+            
+            const username = document.getElementById("loginUser").value.trim();
+            const password = document.getElementById("loginPass").value;
+
+            if (!username || !password) {
+                showError("loginError", "❌ Please enter username and password");
+                return;
+            }
+
+            const users = getUsers();
+            if (!users[username]) {
+                showError("loginError", "❌ Username not found");
+                return;
+            }
+
+            const hashedPassword = await hashPassword(password);
+            if (users[username].password !== hashedPassword) {
+                showError("loginError", "❌ Incorrect password");
+                return;
+            }
+
+            setCurrentUser(username);
+            loadApp();
+        }
+
+        function logout() {
+            clearCurrentUser();
+            location.reload();
+        }
+
+        // ==================== APP FUNCTIONS ====================
+        function getUses() {
+            const username = getCurrentUser();
+            const todayKey = getTodayKey();
+            const key = `${username}_${todayKey}`;
+            return parseInt(localStorage.getItem(key) || "15");
+        }
+
+        function setUses(value) {
+            const username = getCurrentUser();
+            const todayKey = getTodayKey();
+            const key = `${username}_${todayKey}`;
+            localStorage.setItem(key, Math.max(0, value).toString());
+        }
+
+        function updateUsesDisplay() {
+            const uses = getUses();
+            document.getElementById("usesLeft").textContent = uses;
+        }
+
+        function checkPremium() {
+            const username = getCurrentUser();
+            const users = getUsers();
+            const user = users[username];
+
+            if (!user) return false;
+
+            if (user.premium && user.premiumExpiry) {
+                const expiry = new Date(user.premiumExpiry);
+                if (expiry > new Date()) {
+                    return true;
+                } else {
+                    // Premium expired
+                    user.premium = false;
+                    user.premiumExpiry = null;
+                    saveUsers(users);
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        function loadApp() {
+            showPage("appPage");
+            updateUsesDisplay();
+            
+            const isPremium = checkPremium();
+            const badgeEl = document.getElementById("subBadge");
+            if (isPremium) {
+                badgeEl.textContent = "✨ Premium";
+                badgeEl.classList.add("premium");
+            } else {
+                badgeEl.textContent = "Free Plan";
+                badgeEl.classList.remove("premium");
+            }
+
+            clearError("appError");
+            document.getElementById("output").classList.add("hidden");
+            document.getElementById("prompt").value = "";
+        }
+
+        async function askAI() {
+            clearError("appError");
+            
+            const username = getCurrentUser();
+            const users = getUsers();
+            const user = users[username];
+            const isPremium = checkPremium();
+            const prompt = document.getElementById("prompt").value.trim();
+
+            // Validation
+            if (!prompt) {
+                showError("appError", "❌ Please enter what you're looking for");
+                return;
+            }
+
+            const uses = getUses();
+            if (!isPremium && uses <= 0) {
+                showError("appError", "❌ Daily limit reached. Upgrade to Premium for unlimited uses");
+                return;
+            }
+
+            // Decrement uses
+            if (!isPremium) {
+                setUses(uses - 1);
+                updateUsesDisplay();
+            }
+
+            // Show loading spinner
+            const spinner = document.getElementById("aiLoadingSpinner");
+            spinner.innerHTML = '<span class="loading"></span>';
+            const button = event.target;
+            button.disabled = true;
+
+            try {
+                const response = await fetch("/api/ai", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                const outputEl = document.getElementById("output");
+                if (data.result) {
+                    outputEl.textContent = data.result;
+                    outputEl.classList.add("filled", "success");
+                } else if (data.error) {
+                    throw new Error(data.error);
+                } else {
+                    throw new Error("No response from AI");
+                }
+
+                outputEl.classList.remove("hidden");
+
+            } catch (error) {
+                showError("appError", `❌ Error: ${error.message}`);
+            } finally {
+                spinner.innerHTML = "";
+                button.disabled = false;
+            }
+        }
+
+        function processPremium() {
+            const cardName = document.getElementById("cardName").value.trim();
+            const cardNumber = document.getElementById("cardNumber").value.trim();
+            const cardExp = document.getElementById("cardExp").value.trim();
+            const cardCvc = document.getElementById("cardCvc").value.trim();
+
+            // Validation
+            if (!cardName || !cardNumber || !cardExp || !cardCvc) {
+                alert("⚠️ Please fill in all payment fields");
+                return;
+            }
+
+            // Simple card validation
+            if (!/^\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/.test(cardNumber.replace(/\s/g, ''))) {
+                alert("⚠️ Invalid card number");
+                return;
+            }
+
+            if (!/^\d{2}\/\d{2}$/.test(cardExp)) {
+                alert("⚠️ Invalid expiry format (MM/YY)");
+                return;
+            }
+
+            if (!/^\d{3,4}$/.test(cardCvc)) {
+                alert("⚠️ Invalid CVC");
+                return;
+            }
+
+            // Process premium (simulated)
+            const username = getCurrentUser();
+            const users = getUsers();
+            const user = users[username];
+
+            user.premium = true;
+            const expiryDate = new Date();
+            expiryDate.setMonth(expiryDate.getMonth() + 1);
+            user.premiumExpiry = expiryDate.toISOString();
+
+            saveUsers(users);
+
+            alert("✅ Premium activated! You now have unlimited daily uses for 1 month.");
+            loadApp();
+        }
+
+        // ==================== AUTO LOGIN ====================
+        if (getCurrentUser()) {
+            loadApp();
+        }
+
+        // ==================== KEYBOARD SHORTCUTS ====================
+        document.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                const loginPage = document.getElementById("loginPage");
+                const signupPage = document.getElementById("signupPage");
+                const appPage = document.getElementById("appPage");
+
+                if (!loginPage.classList.contains("hidden")) {
+                    login();
+                } else if (!signupPage.classList.contains("hidden")) {
+                    signup();
+                } else if (!appPage.classList.contains("hidden")) {
+                    askAI();
+                }
+            }
         });
-
-        let data = await res.json();
-
-        output.innerText = data.result || "No response";
-    } catch(e){
-        output.innerText = "AI backend not connected (add /api/ai)";
-    }
-}
-
-// auto login
-if(localStorage.getItem("currentUser")){
-    loadApp();
-}
-</script>
-
+    </script>
 </body>
 </html>
