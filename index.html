@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Circuitly</title>
+<link rel="icon" href="favicon.ico">
+</head>
+<body>
+<h1>Circuitly</h1>
+<p>AI tech recommendations</p>
+<div id="chat"></div>
+<input id="msg" placeholder="Ask something">
+<button onclick="send()">Send</button>
+
+<script>
+async function send() {
+  let count = parseInt(localStorage.getItem("msgCount") || "0");
+  if (count >= 15) {
+    document.getElementById("chat").innerHTML += '<p>Free limit reached. <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Buy Premium</a></p>';
+    return;
+  }
+
+  const msg = document.getElementById("msg").value;
+  const res = await fetch('/api/chat', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({message: msg})
+  });
+
+  const data = await res.json();
+  document.getElementById("chat").innerHTML += '<p><b>AI:</b> '+data.response+'</p>';
+  localStorage.setItem("msgCount", count + 1);
+}
+</script>
+</body>
+</html>
