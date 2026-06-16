@@ -1,36 +1,228 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Circuitly</title>
+<meta charset="UTF-8">
+<title>Curcuitly AI</title>
 <link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0f1117;
+    color: white;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.container {
+    width: 420px;
+    background: #1a1d25;
+    padding: 20px;
+    border-radius: 12px;
+}
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: none;
+}
+button {
+    background: #4f7cff;
+    color: white;
+    cursor: pointer;
+}
+button:hover {
+    background: #3a66ff;
+}
+.hidden { display:none; }
+.small { font-size: 12px; opacity: 0.7; }
+a { color: #4f7cff; cursor: pointer; }
+</style>
 </head>
+
 <body>
-<h1>Circuitly</h1>
-<p>AI tech recommendations</p>
-<div id="chat"></div>
-<input id="msg" placeholder="Ask something">
-<button onclick="send()">Send</button>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div id="loginPage">
+    <h2>Curcuitly Login</h2>
+    <input id="loginUser" placeholder="Username">
+    <input id="loginPass" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p class="small">No account? <a onclick="showSignup()">Sign up</a></p>
+</div>
+
+<!-- SIGNUP -->
+<div id="signupPage" class="hidden">
+    <h2>Sign Up</h2>
+    <input id="suUser" placeholder="Username">
+    <input id="suPass" type="password" placeholder="Password">
+    <button onclick="signup()">Create Account</button>
+    <p class="small"><a onclick="showLogin()">Back to login</a></p>
+</div>
+
+<!-- APP -->
+<div id="appPage" class="hidden">
+    <h2>Curcuitly AI</h2>
+    <p class="small">Daily uses left: <span id="usesLeft">15</span></p>
+
+    <input id="prompt" placeholder="What tech do you need? (budget, use-case)">
+    <button onclick="askAI()">Ask AI</button>
+
+    <p id="output"></p>
+
+    <hr>
+    <a onclick="openSub()">Subscription</a>
+    <br><br>
+    <a onclick="logout()">Logout</a>
+</div>
+
+<!-- SUBSCRIPTION PAGE -->
+<div id="subPage" class="hidden">
+    <h2>Subscription</h2>
+    <p><b>THIS IS A SCHOOL PROJECT, NOT A BUSINESS.</b></p>
+    <p>$10/month unlocks unlimited AI usage (simulated)</p>
+    <button onclick="back()">Back</button>
+</div>
+
+</div>
 
 <script>
-async function send() {
-  let count = parseInt(localStorage.getItem("msgCount") || "0");
-  if (count >= 15) {
-    document.getElementById("chat").innerHTML += '<p>Free limit reached. <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Buy Premium</a></p>';
-    return;
-  }
+// ---------------- STORAGE HELPERS ----------------
+function getUsers() {
+    return JSON.parse(localStorage.getItem("users") || "{}");
+}
+function saveUsers(u) {
+    localStorage.setItem("users", JSON.stringify(u));
+}
+function hash(str) {
+    return crypto.subtle.digest("SHA-256", new TextEncoder().encode(str))
+    .then(buf => Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''));
+}
+function todayKey() {
+    return "uses_" + new Date().toISOString().slice(0,10);
+}
 
-  const msg = document.getElementById("msg").value;
-  const res = await fetch('/api/chat', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({message: msg})
-  });
+// ---------------- NAV ----------------
+function showSignup(){
+    loginPage.classList.add("hidden");
+    signupPage.classList.remove("hidden");
+}
+function showLogin(){
+    signupPage.classList.add("hidden");
+    loginPage.classList.remove("hidden");
+}
+function openSub(){
+    appPage.classList.add("hidden");
+    subPage.classList.remove("hidden");
+}
+function back(){
+    subPage.classList.add("hidden");
+    appPage.classList.remove("hidden");
+}
 
-  const data = await res.json();
-  document.getElementById("chat").innerHTML += '<p><b>AI:</b> '+data.response+'</p>';
-  localStorage.setItem("msgCount", count + 1);
+// ---------------- AUTH ----------------
+async function signup(){
+    let u = suUser.value;
+    let p = await hash(suPass.value);
+
+    let users = getUsers();
+    if(users[u]) return alert("User exists");
+
+    users[u] = {pass:p, sub:false};
+    saveUsers(users);
+
+    alert("Account created!");
+    showLogin();
+}
+
+async function login(){
+    let u = loginUser.value;
+    let p = await hash(loginPass.value);
+
+    let users = getUsers();
+    if(!users[u] || users[u].pass !== p) {
+        return alert("Invalid login");
+    }
+
+    localStorage.setItem("currentUser", u);
+    loadApp();
+}
+
+// ---------------- APP ----------------
+function logout(){
+    localStorage.removeItem("currentUser");
+    location.reload();
+}
+
+function loadApp(){
+    loginPage.classList.add("hidden");
+    signupPage.classList.add("hidden");
+    appPage.classList.remove("hidden");
+
+    updateUses();
+}
+
+function getUses(){
+    let u = localStorage.getItem("currentUser");
+    let key = u + "_" + todayKey();
+    return parseInt(localStorage.getItem(key) || "15");
+}
+
+function setUses(v){
+    let u = localStorage.getItem("currentUser");
+    let key = u + "_" + todayKey();
+    localStorage.setItem(key, v);
+}
+
+function updateUses(){
+    usesLeft.innerText = getUses();
+}
+
+async function askAI(){
+    let u = localStorage.getItem("currentUser");
+    let users = getUsers();
+
+    let uses = getUses();
+
+    if(!users[u].sub && uses <= 0){
+        return alert("Daily limit reached (15 uses). Subscribe for unlimited.");
+    }
+
+    let prompt = document.getElementById("prompt").value;
+
+    // decrement usage
+    if(!users[u].sub){
+        setUses(uses - 1);
+        updateUses();
+    }
+
+    // CALL YOUR BACKEND (ai.py on Vercel serverless)
+    try {
+        let res = await fetch("/api/ai", {
+            method:"POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({prompt})
+        });
+
+        let data = await res.json();
+
+        output.innerText = data.result || "No response";
+    } catch(e){
+        output.innerText = "AI backend not connected (add /api/ai)";
+    }
+}
+
+// auto login
+if(localStorage.getItem("currentUser")){
+    loadApp();
 }
 </script>
+
 </body>
 </html>
