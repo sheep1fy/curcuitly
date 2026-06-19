@@ -2,242 +2,754 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Circuitly | AI Tech Recommendations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuitly — AI Hardware Architect</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Tailwind CSS for modern utility styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              obsidian: {
+                DEFAULT: '#030303',
+                card: '#0a0a0a',
+                hover: '#121212',
+                border: 'rgba(255, 255, 255, 0.06)',
+                borderLight: 'rgba(255, 255, 255, 0.12)'
+              },
+              neon: {
+                cyan: '#00f2fe',
+                blue: '#4facfe',
+                silver: '#cbd5e1'
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'SF Mono', 'Menlo', 'monospace']
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- Google Fonts: Inter and Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-      :root {
-        --bg-dark: #0b0f19;
-        --card-dark: #161b26;
-        --accent-neon: #00f2fe;
-        --accent-purple: #4facfe;
-        --text-muted: #94a3b8;
-      }
-
       body {
-        background-color: var(--bg-dark);
-        color: #ffffff;
         font-family: 'Inter', sans-serif;
-        overflow-x: hidden;
+        background-color: #030303;
+        color: #f8fafc;
+        -webkit-font-smoothing: antialiased;
       }
-
-      h1, h2, h3, .navbar-brand, .btn-neon {
+      
+      .space-font {
         font-family: 'Space Grotesk', sans-serif;
       }
 
-      /* Sleek Navbar */
-      .navbar {
-        background: rgba(11, 15, 25, 0.8) !important;
-        backdrop-filter: blur(12px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      /* Unseen-style grid background overlay */
+      .grid-overlay {
+        background-image: 
+          linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 40px 40px;
+        mask-image: radial-gradient(circle 600px at 50% 200px, black, transparent);
+        -webkit-mask-image: radial-gradient(circle 600px at 50% 200px, black, transparent);
       }
 
-      .navbar-brand {
-        font-weight: 700;
-        letter-spacing: -0.5px;
-        background: linear-gradient(45deg, var(--accent-purple), var(--accent-neon));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #030303;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1a1a1a;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #2a2a2a;
       }
 
-      .offcanvas {
-        background-color: var(--bg-dark);
-        border-left: 1px solid rgba(255, 255, 255, 0.1);
+      /* Shimmer Loading Animation */
+      @keyframes shimmer {
+        100% { transform: translateX(100%); }
       }
-
-      /* Hero & Prompt Section */
-      .hero-section {
-        padding-top: 140px;
-        padding-bottom: 60px;
-        background: radial-gradient(circle at 50% 10%, rgba(0, 242, 254, 0.1) 0%, transparent 50%);
-      }
-
-      .ai-search-box {
-        background: var(--card-dark);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 16px;
-        padding: 8px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        transition: all 0.3s ease;
-      }
-
-      .ai-search-box:focus-within {
-        border-color: var(--accent-neon);
-        box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
-      }
-
-      .ai-search-box input {
-        background: transparent;
-        border: none;
-        color: #fff;
-        font-size: 1.1rem;
-      }
-
-      .ai-search-box input:focus {
-        background: transparent;
-        box-shadow: none;
-        color: #fff;
-      }
-
-      .btn-neon {
-        background: linear-gradient(135deg, var(--accent-purple), var(--accent-neon));
-        color: #000;
-        font-weight: 600;
-        border: none;
-        border-radius: 12px;
-        padding: 12px 24px;
-        transition: transform 0.2s;
-      }
-
-      .btn-neon:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
-      }
-
-      /* Product Cards Placements */
-      .product-card {
-        background: var(--card-dark);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 16px;
-        transition: all 0.3s ease;
-      }
-
-      .product-card:hover {
-        transform: translateY(-5px);
-        border-color: rgba(0, 242, 254, 0.3);
-      }
-
-      .badge-tech {
-        background: rgba(0, 242, 254, 0.1);
-        color: var(--accent-neon);
-        border: 1px solid rgba(0, 242, 254, 0.2);
+      .shimmer::after {
+        position: absolute;
+        top: 0; right: 0; bottom: 0; left: 0;
+        transform: translateX(-100%);
+        background-image: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.03) 20%,
+          rgba(255, 255, 255, 0.07) 60%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        animation: shimmer 1.8s infinite;
+        content: '';
       }
     </style>
   </head>
-  <body>
+  <body class="relative min-h-screen overflow-x-hidden">
 
-    <nav class="navbar navbar-dark fixed-top py-3">
-      <div class="container">
-        <a class="navbar-brand fs-3" href="#"><i class="bi bi-cpu me-2"></i>CIRCUITLY</a>
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+    <!-- Subtle ambient glowing background blur -->
+    <div class="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-b from-neutral-800/10 to-transparent blur-[120px] pointer-events-none z-0"></div>
+    <div class="absolute top-[300px] right-[-100px] w-[400px] h-[400px] bg-cyan-950/10 blur-[100px] pointer-events-none z-0"></div>
+    
+    <!-- Tech Grid Background -->
+    <div class="absolute inset-0 grid-overlay pointer-events-none z-0"></div>
+
+    <!-- Notification Toast (replaces intrusive alert boxes) -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-obsidian-card border border-obsidian-borderLight px-4 py-3 rounded-xl flex items-center gap-3 shadow-2xl">
+      <i data-lucide="check-circle" class="text-emerald-400 w-5 h-5"></i>
+      <span id="toast-text" class="text-sm font-medium text-neutral-200">Copied to clipboard</span>
+    </div>
+
+    <!-- HEADER & NAVIGATION -->
+    <header class="relative z-10 border-b border-obsidian-border bg-obsidian/75 backdrop-blur-md sticky top-0">
+      <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         
-        <div class="offcanvas offcanvas-end text-white" id="offcanvasNavbar">
-          <div class="offcanvas-header border-bottom border-secondary">
-            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        <!-- Brand / Logo -->
+        <a href="#" class="flex items-center gap-2 group">
+          <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-300 group-hover:border-white/30 group-hover:bg-white/10">
+            <!-- Icon reminiscent of a microchip / circuit path -->
+            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="6" />
+              <path d="M7 12h10M12 7v10" />
+            </svg>
           </div>
-          <div class="offcanvas-body">
-            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3 gap-3">
-              <li class="nav-item">
-                <a class="nav-link active" href="#"><i class="bi bi-house-door me-2"></i>Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#"><i class="bi bi-laptop me-2"></i>Saved Recommendations</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#"><i class="bi bi-gear me-2"></i>Settings</a>
-              </li>
-            </ul>
+          <span class="space-font font-bold text-lg tracking-wider text-white">CIRCUITLY</span>
+        </a>
+
+        <!-- Status & Navigation -->
+        <div class="flex items-center gap-6">
+          <div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/15 text-[11px] font-mono text-emerald-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            AI ENGINE: ONLINE
           </div>
+          
+          <button onclick="toggleDevConsole()" class="text-xs font-mono text-neutral-400 hover:text-white border border-obsidian-border hover:border-neutral-700 bg-obsidian px-3 py-1.5 rounded-lg transition-all">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="terminal" class="w-3.5 h-3.5"></i> Dev Console
+            </span>
+          </button>
         </div>
       </div>
-    </nav>
+    </header>
 
-    <section class="hero-section text-center">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-lg-8">
-            <span class="badge badge-tech mb-3 px-3 py-2 rounded-pill">Next-Gen Tech Finder</span>
-            <h1 class="display-4 fw-bold mb-3">Find your perfect hardware setup using AI.</h1>
-            <p class="text-muted fs-5 mb-5">Tell Circuitly what you do, your budget, and preferences. Our algorithm will wire up the ultimate match.</p>
-            
-            <form id="ai-form" class="ai-search-box d-flex align-items-center">
-              <i class="bi bi-stars text-info fs-4 mx-3"></i>
-              <input type="text" id="user-prompt" class="form-control" placeholder="Try: 'A quiet coding setup under $1200' or 'Best mouse for small hands'..." required>
-              <button class="btn btn-neon ms-2" type="submit">Generate</button>
-            </form>
+    <!-- MAIN BODY -->
+    <main class="relative z-10 max-w-6xl mx-auto px-6 py-12">
+      
+      <!-- HERO HEADER (Extremely Clean Unseen.co Vibe) -->
+      <section class="text-center max-w-3xl mx-auto mb-16">
+        <div class="inline-block text-xs font-mono tracking-widest text-neutral-500 uppercase mb-4">
+          Next-Generation Hardware Recommendations
+        </div>
+        <h1 class="space-font text-4xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-white mb-6 leading-tight">
+          Configure setups designed for human output.
+        </h1>
+        <p class="text-neutral-400 text-base sm:text-lg font-light leading-relaxed">
+          Circuitly parses natural inquiries to build precise, custom configurations tailored exactly to your budget, workspace aesthetics, and computing needs.
+        </p>
+      </section>
+
+      <!-- CONFIGURATION ENGINE -->
+      <section class="mb-16">
+        <div class="bg-obsidian-card border border-obsidian-border rounded-2xl p-6 sm:p-8 shadow-3xl">
+          
+          <!-- Modern Search Bar / Chat Prompt -->
+          <form id="recommendation-form" onsubmit="handleGenerate(event)">
+            <div class="relative flex flex-col md:flex-row items-stretch gap-4">
+              <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-neutral-500">
+                  <i data-lucide="sparkles" class="w-5 h-5"></i>
+                </div>
+                <input 
+                  type="text" 
+                  id="search-input"
+                  placeholder="Describe your goals... (e.g., 'A modern mechanical keyboard and mouse setup for dark mode video editing')"
+                  class="w-full bg-black border border-obsidian-border focus:border-white/35 focus:ring-0 rounded-xl py-4 pl-12 pr-4 text-white placeholder-neutral-600 outline-none transition-all text-sm font-light"
+                  required
+                >
+              </div>
+              <button 
+                type="submit" 
+                class="bg-white hover:bg-neutral-200 text-black font-semibold text-sm px-8 py-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300"
+              >
+                <span>Synthesize Setup</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </form>
+
+          <!-- Filter Accordion System -->
+          <div class="mt-8 pt-6 border-t border-obsidian-border">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+              <span class="text-xs font-mono text-neutral-400 flex items-center gap-2">
+                <i data-lucide="sliders" class="w-3.5 h-3.5"></i> TUNING PARAMETERS
+              </span>
+              <button onclick="resetSliders()" class="text-[11px] font-mono text-neutral-500 hover:text-neutral-300 transition-colors">
+                RESET VALUES
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- Budget Slider -->
+              <div class="space-y-2">
+                <div class="flex justify-between text-xs font-mono">
+                  <span class="text-neutral-400">Target Budget Cap</span>
+                  <span class="text-white" id="budget-val">$1,200</span>
+                </div>
+                <input 
+                  type="range" 
+                  id="budget-slider"
+                  min="200" 
+                  max="5000" 
+                  step="50" 
+                  value="1200"
+                  oninput="updateValue('budget', this.value)"
+                  class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer accent-white"
+                >
+              </div>
+
+              <!-- Ergonomics Priority Slider -->
+              <div class="space-y-2">
+                <div class="flex justify-between text-xs font-mono">
+                  <span class="text-neutral-400">Ergonomics Focus</span>
+                  <span class="text-white" id="ergo-val">Balanced</span>
+                </div>
+                <input 
+                  type="range" 
+                  id="ergo-slider"
+                  min="1" 
+                  max="3" 
+                  step="1" 
+                  value="2"
+                  oninput="updateValue('ergo', this.value)"
+                  class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer accent-white"
+                >
+              </div>
+
+              <!-- Tech Aesthetic Style Selection -->
+              <div class="space-y-2">
+                <div class="flex justify-between text-xs font-mono">
+                  <span class="text-neutral-400">Workspace Tone</span>
+                  <span class="text-white" id="tone-val">Obsidian Minimalist</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                  <button type="button" onclick="selectTone('Obsidian Minimalist', this)" class="tone-btn text-[10px] font-mono py-1.5 border border-white/20 bg-white/5 text-white rounded-lg transition-all">OBSIDIAN</button>
+                  <button type="button" onclick="selectTone('Silver Industrial', this)" class="tone-btn text-[10px] font-mono py-1.5 border border-obsidian-border bg-transparent text-neutral-400 rounded-lg transition-all hover:border-neutral-700">SILVER</button>
+                  <button type="button" onclick="selectTone('RGB Cyberpunk', this)" class="tone-btn text-[10px] font-mono py-1.5 border border-obsidian-border bg-transparent text-neutral-400 rounded-lg transition-all hover:border-neutral-700">NEON</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Suggested Quick Prompts -->
+          <div class="mt-6 flex flex-wrap items-center gap-2">
+            <span class="text-xs font-mono text-neutral-500 mr-2">Quick Syntheses:</span>
+            <button onclick="setQuery('Ultrawide workstation setup with silent mechanical options')" class="text-xs bg-white/[0.02] hover:bg-white/[0.06] border border-obsidian-border hover:border-neutral-700 px-3 py-1.5 rounded-lg transition-all text-neutral-300">
+              Ultrawide Programmer
+            </button>
+            <button onclick="setQuery('Ergonomic productivity setup for dual monitors')" class="text-xs bg-white/[0.02] hover:bg-white/[0.06] border border-obsidian-border hover:border-neutral-700 px-3 py-1.5 rounded-lg transition-all text-neutral-300">
+              Ergonomic Layout
+            </button>
+            <button onclick="setQuery('Compact minimalist travel-friendly developer mouse and keycaps')" class="text-xs bg-white/[0.02] hover:bg-white/[0.06] border border-obsidian-border hover:border-neutral-700 px-3 py-1.5 rounded-lg transition-all text-neutral-300">
+              Minimalist Travel
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- RESULTS SECTION -->
+      <section class="mb-16">
+        <div class="flex items-center justify-between border-b border-obsidian-border pb-4 mb-8">
+          <div class="flex items-center gap-3">
+            <div class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#00f2fe]"></div>
+            <h2 class="space-font text-xl font-medium text-white">Synthesized Hardware Stack</h2>
+          </div>
+          <div id="result-meta" class="text-xs font-mono text-neutral-500">
+            SHOWING DEFAULT PROFILE
           </div>
         </div>
-      </div>
-    </section>
 
-    <main class="container pb-5">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold mb-0">Recommended Gear</h3>
-        <span class="text-muted px-2" id="results-counter">Placeholders ready</span>
-      </div>
+        <!-- Shimmering Load State -->
+        <div id="results-loading" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="relative bg-obsidian-card border border-obsidian-border rounded-xl p-5 h-72 overflow-hidden shimmer"></div>
+          <div class="relative bg-obsidian-card border border-obsidian-border rounded-xl p-5 h-72 overflow-hidden shimmer"></div>
+          <div class="relative bg-obsidian-card border border-obsidian-border rounded-xl p-5 h-72 overflow-hidden shimmer"></div>
+        </div>
 
-      <div class="row g-4" id="recommendations-container">
+        <!-- Recommendations Container Grid -->
+        <div id="results-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Dynamically generated through JS below -->
+        </div>
+      </section>
+
+      <!-- BOTTOM INTERACTIVE DEVELOPER CONSOLE -->
+      <section id="dev-console" class="hidden border border-obsidian-borderLight bg-obsidian-card rounded-2xl p-6 sm:p-8 shadow-3xl mb-12 relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-2">
+          <button onclick="toggleDevConsole()" class="text-neutral-500 hover:text-white p-2">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
         
-        <div class="col-md-4">
-          <div class="card product-card h-100 p-3 text-white">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <span class="badge badge-tech">Top Pick</span>
-              <span class="text-success fw-bold">$149</span>
-            </div>
-            <h5 class="fw-bold">Mechanical Keyboard Pro</h5>
-            <p class="text-muted small">75% wireless layout with silent linear switches. Ideal for coding and sleek setups.</p>
-            <div class="mt-auto pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
-              <span class="small text-info"><i class="bi bi-cpu me-1"></i> 98% Match</span>
-              <a href="#" class="btn btn-sm btn-outline-light rounded-pill">View Specs</a>
-            </div>
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-2 h-2 rounded-full bg-yellow-400"></div>
+          <h3 class="space-font font-bold text-base text-white">Developer & Python Integration Panel</h3>
+        </div>
+        <p class="text-sm text-neutral-400 mb-6">
+          Ready to back this beautiful UI with a true backend? Here is how to map this frontend to your Python server instantly.
+        </p>
+
+        <!-- Python Code Segment -->
+        <div class="bg-black/80 rounded-xl border border-obsidian-border p-4 mb-6 relative group">
+          <div class="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button onclick="copyPythonCode()" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md transition-all text-xs font-mono flex items-center gap-1.5">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy
+            </button>
           </div>
+          <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-2">
+            <span class="text-xs font-mono text-neutral-400">app.py (Flask Implementation)</span>
+            <span class="text-[10px] font-mono text-neutral-500">FastAPI & Django compatible</span>
+          </div>
+          <pre id="python-boilerplate" class="text-xs font-mono text-neutral-300 overflow-x-auto whitespace-pre leading-relaxed p-1">
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)  # Enable CORS for cross-origin client integration
+
+@app.route('/api/recommend', methods=['POST'])
+def get_recommendations():
+    data = request.json
+    user_query = data.get('query', '')
+    budget = data.get('budget', 1200)
+    ergonomics = data.get('ergonomics', 'Balanced')
+    aesthetic = data.get('aesthetic', 'Obsidian Minimalist')
+    
+    # 1. Run your AI logic or database lookup here
+    # 2. Match products elegantly based on the query parameters
+    
+    mock_results = [
+        {
+            "id": 1,
+            "category": "Keyboard",
+            "name": "Custom Obsidian Keeb",
+            "price": 180,
+            "match": 98,
+            "badge": "AI Match",
+            "desc": f"Perfect fit for '{user_query}' under absolute budget limit.",
+            "specs": ["Silent switches", "Wireless tri-mode", "OLED Screen"]
+        }
+    ]
+    return jsonify({"results": mock_results})
+
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)</pre>
         </div>
 
-        <div class="col-md-4">
-          <div class="card product-card h-100 p-3 text-white">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <span class="badge badge-tech">Budget King</span>
-              <span class="text-success fw-bold">$79</span>
+        <!-- Connection Settings Toggle -->
+        <div class="bg-white/5 border border-obsidian-border rounded-xl p-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h4 class="text-sm font-semibold text-white">Select Live Engine Connection</h4>
+              <p class="text-xs text-neutral-400">Swap between simulated responses inside Javascript or active Python fetch routing.</p>
             </div>
-            <h5 class="fw-bold">Ergonomic Precision Mouse</h5>
-            <p class="text-muted small">High DPI tracking, multi-device switching, and an ergonomic structure to reduce wrist fatigue.</p>
-            <div class="mt-auto pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
-              <span class="small text-info"><i class="bi bi-cpu me-1"></i> 94% Match</span>
-              <a href="#" class="btn btn-sm btn-outline-light rounded-pill">View Specs</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="card product-card h-100 p-3 text-white">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <span class="badge badge-tech">Premium Performance</span>
-              <span class="text-success fw-bold">$329</span>
-            </div>
-            <h5 class="fw-bold">UltraWide 2K Monitor</h5>
-            <p class="text-muted small">1440p, 144Hz refresh rate IPS display. Curved form factor to maximize screen estate.</p>
-            <div class="mt-auto pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
-              <span class="small text-info"><i class="bi bi-cpu me-1"></i> 91% Match</span>
-              <a href="#" class="btn btn-sm btn-outline-light rounded-pill">View Specs</a>
+            <div class="flex gap-2">
+              <button id="engine-local" onclick="setEngineMode('local')" class="px-4 py-2 text-xs font-mono border border-white/20 bg-white/10 text-white rounded-lg transition-all">
+                MOCK CLIENT
+              </button>
+              <button id="engine-python" onclick="setEngineMode('python')" class="px-4 py-2 text-xs font-mono border border-obsidian-border bg-transparent text-neutral-500 rounded-lg transition-all hover:border-neutral-700">
+                PYTHON API (POST)
+              </button>
             </div>
           </div>
+          <div class="mt-3 text-xs font-mono text-neutral-500 flex items-center gap-2">
+            <i data-lucide="info" class="w-3.5 h-3.5 text-neutral-400"></i>
+            <span id="engine-status">Active mode: Mock Client Engine. Perfect for UI simulation and design prototyping.</span>
+          </div>
         </div>
+      </section>
 
-      </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- FOOTER -->
+    <footer class="relative z-10 border-t border-obsidian-border bg-obsidian py-12">
+      <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex items-center gap-2">
+          <span class="space-font font-bold text-sm tracking-widest text-neutral-500">CIRCUITLY</span>
+          <span class="text-xs font-mono text-neutral-600">© 2026</span>
+        </div>
+        <div class="flex gap-6 text-xs font-mono text-neutral-500">
+          <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+          <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+          <a href="#" class="hover:text-white transition-colors">Documentation</a>
+        </div>
+      </div>
+    </footer>
 
+    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
     <script>
-      document.getElementById('ai-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const query = document.getElementById('user-prompt').value;
+      // Active states for sliders and styles
+      let state = {
+        budget: 1200,
+        ergonomics: 'Balanced',
+        tone: 'Obsidian Minimalist',
+        query: '',
+        engineMode: 'local' // or 'python'
+      };
+
+      // Mock DB for dynamic local simulations
+      const mockHardwareDB = [
+        {
+          id: 101,
+          category: "Keyboard",
+          name: "Unseen Matte Pro Keyboards",
+          price: 210,
+          match: 99,
+          badge: "Obsidian Favorite",
+          desc: "Unbelievably low profile mechanical with custom linear switches. Designed with zero reflections and stealth dark keys.",
+          specs: ["Double-shot PBT keycaps", "Hot-swappable", "OLED Ambient indicator"],
+          style: "Obsidian Minimalist"
+        },
+        {
+          id: 102,
+          category: "Mouse",
+          name: "Sleek Arc Ergonomic Point",
+          price: 129,
+          match: 97,
+          badge: "Top Tier",
+          desc: "A pure magnesium shell mouse weighing only 45 grams. Hand comfort crafted to minimize long work-day fatigue.",
+          specs: ["4000Hz polling rate", "USB-C fast charge", "8k Optical sensor"],
+          style: "Obsidian Minimalist"
+        },
+        {
+          id: 103,
+          category: "Audio",
+          name: "Flat-Response Pro Studio Monitors",
+          price: 450,
+          match: 95,
+          badge: "Reference Standard",
+          desc: "Acoustically tuned dark monitors that deliver incredible spatial precision for master video/audio grading.",
+          specs: ["Balanced XLR input", "Class D Bi-amplification", "0dB low noise floor"],
+          style: "Obsidian Minimalist"
+        },
+        {
+          id: 201,
+          category: "Keyboard",
+          name: "Solid Aluminium Cyber Gasket",
+          price: 340,
+          match: 98,
+          badge: "Metal Solid",
+          desc: "CNC milled layout with physical weight support. Feels incredibly robust with a bright modern industrial design look.",
+          specs: ["Brass layout plate", "Hand-lubricated stabs", "Coiled metallic cable"],
+          style: "Silver Industrial"
+        },
+        {
+          id: 202,
+          category: "Mouse",
+          name: "Anodized Silver Tracking Engine",
+          price: 150,
+          match: 96,
+          badge: "Precise Control",
+          desc: "Slick brushed aluminium control surface. Smooth gliding pads on custom precision tracks.",
+          specs: ["Laser tracking precision", "Infinite-scrolling dial", "Dual connect"],
+          style: "Silver Industrial"
+        },
+        {
+          id: 203,
+          category: "Lighting",
+          name: "Minimalist Monitor Lightbar Pro",
+          price: 89,
+          match: 92,
+          badge: "Eye Saver",
+          desc: "Symmetrical front-facing screen bar that casts bright glare-free downlight strictly onto your workspace.",
+          specs: ["Stepless dimming controls", "Auto color balancing", "Aluminium design"],
+          style: "Silver Industrial"
+        },
+        {
+          id: 301,
+          category: "Keyboard",
+          name: "Neon Gasket Transparent Keeb",
+          price: 160,
+          match: 94,
+          badge: "Vivid Accent",
+          desc: "Entirely clear frosted polycarbonate shell that captures light beautifully. True retro-futuristic style.",
+          specs: ["Custom sound dampening", "Fully reactive RGB mapping", "Transparent stems"],
+          style: "RGB Cyberpunk"
+        },
+        {
+          id: 302,
+          category: "Mouse",
+          name: "Carbon Glide RGB Mouse",
+          price: 95,
+          match: 93,
+          badge: "Performance Glow",
+          desc: "Honeycomb skeletal structure featuring vibrant fully addressable RGB strips around the base. Ultra lightweight.",
+          specs: ["68g ultra lightweight", "Pixart 3395 sensor", "Dynamic speed feet"],
+          style: "RGB Cyberpunk"
+        },
+        {
+          id: 303,
+          category: "Audio / Display Accent",
+          name: "Sound-Reactive LED Desk Tower",
+          price: 70,
+          match: 90,
+          badge: "Cyber Mood",
+          desc: "Responsive tower that translates ambient workspace room sound directly into smooth cyberpunk color gradients.",
+          specs: ["App customized pattern", "High density SMD light", "Instant audio sync"],
+          style: "RGB Cyberpunk"
+        }
+      ];
+
+      // Initial rendering and icon mapping
+      window.onload = function() {
+        lucide.createIcons();
+        renderProducts(mockHardwareDB.filter(p => p.style === "Obsidian Minimalist"));
+      };
+
+      // Set input from quick prompts
+      function setQuery(text) {
+        document.getElementById('search-input').value = text;
+      }
+
+      // Live updates of values
+      function updateValue(type, value) {
+        if (type === 'budget') {
+          state.budget = value;
+          document.getElementById('budget-val').innerText = `$${Number(value).toLocaleString()}`;
+        } else if (type === 'ergo') {
+          const ergoLabels = { '1': 'Minimum', '2': 'Balanced', '3': 'Maximum Ergonomics' };
+          state.ergonomics = ergoLabels[value];
+          document.getElementById('ergo-val').innerText = state.ergonomics;
+        }
+      }
+
+      // Reset Slider Configs
+      function resetSliders() {
+        document.getElementById('budget-slider').value = 1200;
+        document.getElementById('ergo-slider').value = 2;
+        updateValue('budget', 1200);
+        updateValue('ergo', 2);
+        selectTone('Obsidian Minimalist', document.querySelectorAll('.tone-btn')[0]);
+      }
+
+      // Sleek style tone picker selection style swapping
+      function selectTone(tone, button) {
+        state.tone = tone;
+        document.getElementById('tone-val').innerText = tone;
+
+        document.querySelectorAll('.tone-btn').forEach(btn => {
+          btn.classList.remove('border-white/20', 'bg-white/5', 'text-white');
+          btn.classList.add('border-obsidian-border', 'bg-transparent', 'text-neutral-400', 'hover:border-neutral-700');
+        });
+
+        button.classList.add('border-white/20', 'bg-white/5', 'text-white');
+        button.classList.remove('border-obsidian-border', 'bg-transparent', 'text-neutral-400', 'hover:border-neutral-700');
+      }
+
+      // Show temporary custom toasts
+      function showToast(text) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-text').innerText = text;
+        toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+        toast.classList.add('translate-y-0', 'opacity-100');
         
-        console.log("Sending query to Python Backend:", query);
-        // You will use fetch() here later to hook up your Python server/API endpoint
-        // Example: 
-        // fetch('/api/recommend?query=' + encodeURIComponent(query))
-        //   .then(res => res.json())
-        //   .then(data => updateUI(data));
-      });
+        setTimeout(() => {
+          toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+          toast.classList.remove('translate-y-0', 'opacity-100');
+        }, 3000);
+      }
+
+      // Toggle dev panel view
+      function toggleDevConsole() {
+        const devConsole = document.getElementById('dev-console');
+        devConsole.classList.toggle('hidden');
+        if(!devConsole.classList.contains('hidden')) {
+          devConsole.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
+      // Set backend engine choice (local simulation vs python connection)
+      function setEngineMode(mode) {
+        state.engineMode = mode;
+        const localBtn = document.getElementById('engine-local');
+        const pythonBtn = document.getElementById('engine-python');
+        const statusText = document.getElementById('engine-status');
+
+        if(mode === 'local') {
+          localBtn.className = "px-4 py-2 text-xs font-mono border border-white/20 bg-white/10 text-white rounded-lg transition-all";
+          pythonBtn.className = "px-4 py-2 text-xs font-mono border border-obsidian-border bg-transparent text-neutral-500 rounded-lg transition-all hover:border-neutral-700";
+          statusText.innerText = "Active mode: Mock Client Engine. Perfect for UI simulation and design prototyping.";
+        } else {
+          pythonBtn.className = "px-4 py-2 text-xs font-mono border border-white/20 bg-white/10 text-white rounded-lg transition-all";
+          localBtn.className = "px-4 py-2 text-xs font-mono border border-obsidian-border bg-transparent text-neutral-500 rounded-lg transition-all hover:border-neutral-700";
+          statusText.innerText = "Active mode: Python API Mode. Submits standard JSON POST requests directly to localhost:5000/api/recommend.";
+        }
+      }
+
+      // Copy text code boilerplate using fallback copy approach safely inside canvases
+      function copyPythonCode() {
+        const text = document.getElementById('python-boilerplate').innerText;
+        const elem = document.createElement('textarea');
+        elem.value = text;
+        document.body.appendChild(elem);
+        elem.select();
+        document.execCommand('copy');
+        document.body.removeChild(elem);
+        showToast('Python boilerplate copied!');
+      }
+
+      // Synthesize recommendations trigger
+      function handleGenerate(event) {
+        event.preventDefault();
+        const query = document.getElementById('search-input').value;
+        state.query = query;
+
+        // Hide dynamic list and reveal premium loader shimmers
+        document.getElementById('results-container').classList.add('hidden');
+        document.getElementById('results-loading').classList.remove('hidden');
+
+        if(state.engineMode === 'local') {
+          // Fake high-tech analysis latency (Unseen Style Loading delay)
+          setTimeout(() => {
+            // Pick mock recommendations matching target style category
+            const results = mockHardwareDB.filter(p => p.style === state.tone && p.price <= state.budget);
+            
+            document.getElementById('results-loading').classList.add('hidden');
+            document.getElementById('results-container').classList.remove('hidden');
+            
+            if(results.length > 0) {
+              renderProducts(results);
+              document.getElementById('result-meta').innerText = `SYNTHESIZED IN 0.8s • ${results.length} MATCHES`;
+              showToast('Synthesized layout matches!');
+            } else {
+              // Generate budget adaptation
+              const budgetAdaption = mockHardwareDB.filter(p => p.style === state.tone);
+              renderProducts(budgetAdaption);
+              document.getElementById('result-meta').innerText = `AUTO-ADAPTED BUDGET • ${budgetAdaption.length} RECOMMENDATIONS`;
+              showToast('Exceeded budget target. Adaptive recommendations rendered.');
+            }
+          }, 1100);
+        } else {
+          // Send request down to active localhost API
+          fetch('http://localhost:5000/api/recommend', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              query: state.query,
+              budget: state.budget,
+              ergonomics: state.ergonomics,
+              aesthetic: state.tone
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            document.getElementById('results-loading').classList.add('hidden');
+            document.getElementById('results-container').classList.remove('hidden');
+            if (data.results) {
+              renderProducts(data.results);
+              document.getElementById('result-meta').innerText = `PYTHON API RESPONSE • SUCCESS`;
+              showToast('Received suggestions from Python API');
+            }
+          })
+          .catch(err => {
+            console.error("Local python server connection failed. Swapped to fallback interface.", err);
+            document.getElementById('results-loading').classList.add('hidden');
+            document.getElementById('results-container').classList.remove('hidden');
+            showToast('Python endpoint down. Fallback simulation rendered.');
+            // Render beautiful mockup instead
+            renderProducts(mockHardwareDB.filter(p => p.style === state.tone));
+          });
+        }
+      }
+
+      // Beautiful dynamic layout card generator
+      function renderProducts(products) {
+        const container = document.getElementById('results-container');
+        container.innerHTML = '';
+
+        products.forEach(p => {
+          // Create specs list items
+          let specsHTML = '';
+          if(p.specs && p.specs.length > 0) {
+            specsHTML = p.specs.map(spec => `
+              <li class="flex items-center gap-1.5 text-xs text-neutral-400 font-mono">
+                <span class="w-1 h-1 rounded-full bg-neutral-600"></span>
+                ${spec}
+              </li>
+            `).join('');
+          }
+
+          const card = document.createElement('div');
+          card.className = "group bg-obsidian-card border border-obsidian-border rounded-xl p-5 hover:border-white/20 transition-all duration-300 flex flex-col justify-between hover:translate-y-[-2px] relative overflow-hidden";
+          
+          card.innerHTML = `
+            <!-- Top Card Frame Elements -->
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-[10px] font-mono bg-white/[0.04] text-neutral-400 px-2 py-0.5 rounded-full border border-obsidian-border">
+                  ${p.category.toUpperCase()}
+                </span>
+                <span class="text-sm font-mono text-white">$${p.price}</span>
+              </div>
+              
+              <h3 class="space-font text-base font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                ${p.name}
+              </h3>
+              
+              <p class="text-xs text-neutral-400 font-light leading-relaxed mb-4">
+                ${p.desc}
+              </p>
+            </div>
+
+            <!-- Bottom Specs Integration & Action Info -->
+            <div class="mt-4 pt-4 border-t border-obsidian-border flex flex-col gap-3">
+              <ul class="space-y-1">
+                ${specsHTML}
+              </ul>
+              <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.02]">
+                <span class="text-[10px] font-mono text-cyan-400 flex items-center gap-1">
+                  <i data-lucide="cpu" class="w-3 h-3"></i> ${p.match}% Setup Match
+                </span>
+                <button onclick="copySpecs('${p.name}')" class="text-[10px] font-mono text-neutral-500 hover:text-white transition-colors flex items-center gap-1">
+                  <i data-lucide="copy" class="w-3 h-3"></i> Copy Specs
+                </button>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+        // Initialize lucide dynamic elements inside innerHTML
+        lucide.createIcons();
+      }
+
+      // Copy simple specifications target helper
+      function copySpecs(name) {
+        const elem = document.createElement('textarea');
+        elem.value = `Circuitly match specs output: ${name}`;
+        document.body.appendChild(elem);
+        elem.select();
+        document.execCommand('copy');
+        document.body.removeChild(elem);
+        showToast(`Copied ${name} specification details!`);
+      }
     </script>
   </body>
 </html>
