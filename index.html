@@ -110,9 +110,9 @@
     <!-- Tech Grid Background -->
     <div class="absolute inset-0 grid-overlay pointer-events-none z-0"></div>
 
-    <!-- Notification Toast (replaces intrusive alert boxes) -->
+    <!-- Notification Toast -->
     <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-obsidian-card border border-obsidian-borderLight px-4 py-3 rounded-xl flex items-center gap-3 shadow-2xl">
-      <i data-lucide="check-circle" class="text-emerald-400 w-5 h-5"></i>
+      <i id="toast-icon" data-lucide="check-circle" class="text-emerald-400 w-5 h-5"></i>
       <span id="toast-text" class="text-sm font-medium text-neutral-200">Copied to clipboard</span>
     </div>
 
@@ -123,7 +123,6 @@
         <!-- Brand / Logo -->
         <a href="#" class="flex items-center gap-2 group">
           <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-300 group-hover:border-white/30 group-hover:bg-white/10">
-            <!-- Icon reminiscent of a microchip / circuit path -->
             <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="2" width="20" height="20" rx="6" />
               <path d="M7 12h10M12 7v10" />
@@ -134,14 +133,14 @@
 
         <!-- Status & Navigation -->
         <div class="flex items-center gap-6">
-          <div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/15 text-[11px] font-mono text-emerald-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            AI ENGINE: ONLINE
+          <div id="status-badge" class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/5 border border-cyan-500/15 text-[11px] font-mono text-cyan-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            GEMINI ENGINE: ACTIVE
           </div>
           
           <button onclick="toggleDevConsole()" class="text-xs font-mono text-neutral-400 hover:text-white border border-obsidian-border hover:border-neutral-700 bg-obsidian px-3 py-1.5 rounded-lg transition-all">
             <span class="flex items-center gap-1.5">
-              <i data-lucide="terminal" class="w-3.5 h-3.5"></i> Dev Console
+              <i data-lucide="terminal" class="w-3.5 h-3.5"></i> Settings & Logic
             </span>
           </button>
         </div>
@@ -151,7 +150,7 @@
     <!-- MAIN BODY -->
     <main class="relative z-10 max-w-6xl mx-auto px-6 py-12">
       
-      <!-- HERO HEADER (Extremely Clean Unseen.co Vibe) -->
+      <!-- HERO HEADER -->
       <section class="text-center max-w-3xl mx-auto mb-16">
         <div class="inline-block text-xs font-mono tracking-widest text-neutral-500 uppercase mb-4">
           Next-Generation Hardware Recommendations
@@ -160,7 +159,7 @@
           Configure setups designed for human output.
         </h1>
         <p class="text-neutral-400 text-base sm:text-lg font-light leading-relaxed">
-          Circuitly parses natural inquiries to build precise, custom configurations tailored exactly to your budget, workspace aesthetics, and computing needs.
+          Circuitly utilizes advanced AI synthesis to design accurate hardware pairings tailored exactly to your budget constraints, ergonomics, and aesthetic workspaces.
         </p>
       </section>
 
@@ -168,7 +167,7 @@
       <section class="mb-16">
         <div class="bg-obsidian-card border border-obsidian-border rounded-2xl p-6 sm:p-8 shadow-3xl">
           
-          <!-- Modern Search Bar / Chat Prompt -->
+          <!-- Search Bar Form -->
           <form id="recommendation-form" onsubmit="handleGenerate(event)">
             <div class="relative flex flex-col md:flex-row items-stretch gap-4">
               <div class="relative flex-1">
@@ -178,7 +177,7 @@
                 <input 
                   type="text" 
                   id="search-input"
-                  placeholder="Describe your goals... (e.g., 'A modern mechanical keyboard and mouse setup for dark mode video editing')"
+                  placeholder="Describe your goals... (e.g., 'A modern mechanical keyboard and mouse setup for coding and study')"
                   class="w-full bg-black border border-obsidian-border focus:border-white/35 focus:ring-0 rounded-xl py-4 pl-12 pr-4 text-white placeholder-neutral-600 outline-none transition-all text-sm font-light"
                   required
                 >
@@ -259,14 +258,14 @@
           <!-- Suggested Quick Prompts -->
           <div class="mt-6 flex flex-wrap items-center gap-2">
             <span class="text-xs font-mono text-neutral-500 mr-2">Quick Syntheses:</span>
-            <button onclick="setQuery('Ultrawide workstation setup with silent mechanical options')" class="text-xs bg-white/[0.02] hover:bg-white/[0.06] border border-obsidian-border hover:border-neutral-700 px-3 py-1.5 rounded-lg transition-all text-neutral-300">
-              Ultrawide Programmer
+            <button onclick="setQuery('Mechanical keyboard and mouse combo optimized for coding efficiency')" class="text-xs bg-white/[0.02] hover:bg-white/[0.06] border border-obsidian-border hover:border-neutral-700 px-3 py-1.5 rounded-lg transition-all text-neutral-300">
+              Coder Setup
             </button>
-            <button onclick="setQuery('Ergonomic productivity setup for dual monitors')" class="text-xs bg-white/[0.02] hover:bg-white/[0.06] border border-obsidian-border hover:border-neutral-700 px-3 py-1.5 rounded-lg transition-all text-neutral-300">
-              Ergonomic Layout
+            <button onclick="setQuery('Ergonomic productivity setup for schoolwork and study')" class="text-xs bg-white/[0.02] hover:bg-white/[0.06] border border-obsidian-border hover:border-neutral-700 px-3 py-1.5 rounded-lg transition-all text-neutral-300">
+              Student Focus
             </button>
-            <button onclick="setQuery('Compact minimalist travel-friendly developer mouse and keycaps')" class="text-xs bg-white/[0.02] hover:bg-white/[0.06] border border-obsidian-border hover:border-neutral-700 px-3 py-1.5 rounded-lg transition-all text-neutral-300">
-              Minimalist Travel
+            <button onclick="setQuery('Minimalist space-saving travel setup for creative designers')" class="text-xs bg-white/[0.02] hover:bg-white/[0.06] border border-obsidian-border hover:border-neutral-700 px-3 py-1.5 rounded-lg transition-all text-neutral-300">
+              Creative Designer
             </button>
           </div>
 
@@ -277,11 +276,11 @@
       <section class="mb-16">
         <div class="flex items-center justify-between border-b border-obsidian-border pb-4 mb-8">
           <div class="flex items-center gap-3">
-            <div class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#00f2fe]"></div>
+            <div id="glow-indicator" class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#00f2fe]"></div>
             <h2 class="space-font text-xl font-medium text-white">Synthesized Hardware Stack</h2>
           </div>
           <div id="result-meta" class="text-xs font-mono text-neutral-500">
-            SHOWING DEFAULT PROFILE
+            INITIALIZING DEMO ENGINE
           </div>
         </div>
 
@@ -307,80 +306,80 @@
         </div>
         
         <div class="flex items-center gap-2 mb-4">
-          <div class="w-2 h-2 rounded-full bg-yellow-400"></div>
-          <h3 class="space-font font-bold text-base text-white">Developer & Python Integration Panel</h3>
+          <div class="w-2 h-2 rounded-full bg-cyan-400"></div>
+          <h3 class="space-font font-bold text-base text-white">Gemini Client-Side Architecture</h3>
         </div>
         <p class="text-sm text-neutral-400 mb-6">
-          Ready to back this beautiful UI with a true backend? Here is how to map this frontend to your Python server instantly.
+          Circuitly contains a fully configured client-side AI pipeline utilizing <strong>gemini-2.5-flash-preview-09-2025</strong>. If you run Circuitly locally, you can supply your own API key to bypass mock restrictions.
         </p>
+
+        <!-- API Key Inputs -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="space-y-1">
+            <label class="text-xs font-mono text-neutral-400">Gemini Key (Leave blank to use environment default)</label>
+            <input 
+              type="password" 
+              id="custom-api-key" 
+              placeholder="AI API Key" 
+              class="w-full bg-black border border-obsidian-border rounded-xl px-3 py-2 text-xs text-white placeholder-neutral-700 outline-none focus:border-cyan-400 transition-all font-mono"
+            >
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-mono text-neutral-400">Model Deployment</label>
+            <div class="bg-black/40 border border-obsidian-border rounded-xl px-3 py-2 text-xs text-neutral-300 font-mono">
+              gemini-2.5-flash-preview-09-2025
+            </div>
+          </div>
+        </div>
 
         <!-- Python Code Segment -->
         <div class="bg-black/80 rounded-xl border border-obsidian-border p-4 mb-6 relative group">
           <div class="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
             <button onclick="copyPythonCode()" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md transition-all text-xs font-mono flex items-center gap-1.5">
-              <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Code
             </button>
           </div>
           <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-2">
-            <span class="text-xs font-mono text-neutral-400">app.py (Flask Implementation)</span>
-            <span class="text-[10px] font-mono text-neutral-500">FastAPI & Django compatible</span>
+            <span class="text-xs font-mono text-neutral-400">Local Testing & Implementation (Python)</span>
+            <span class="text-[10px] font-mono text-neutral-500">CORS Support Configured</span>
           </div>
           <pre id="python-boilerplate" class="text-xs font-mono text-neutral-300 overflow-x-auto whitespace-pre leading-relaxed p-1">
+# To run this Flask server: pip install flask flask-cors google-generativeai
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import google.generativeai as genai
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for cross-origin client integration
+CORS(app)
+
+# Replace with your actual Gemini API key
+genai.configure(api_key="YOUR_GEMINI_API_KEY")
 
 @app.route('/api/recommend', methods=['POST'])
 def get_recommendations():
-    data = request.json
-    user_query = data.get('query', '')
+    data = request.json or {}
+    query = data.get('query', '')
     budget = data.get('budget', 1200)
-    ergonomics = data.get('ergonomics', 'Balanced')
     aesthetic = data.get('aesthetic', 'Obsidian Minimalist')
     
-    # 1. Run your AI logic or database lookup here
-    # 2. Match products elegantly based on the query parameters
-    
-    mock_results = [
-        {
-            "id": 1,
-            "category": "Keyboard",
-            "name": "Custom Obsidian Keeb",
-            "price": 180,
-            "match": 98,
-            "badge": "AI Match",
-            "desc": f"Perfect fit for '{user_query}' under absolute budget limit.",
-            "specs": ["Silent switches", "Wireless tri-mode", "OLED Screen"]
-        }
-    ]
-    return jsonify({"results": mock_results})
+    # Simple logic mapping to fallback items or querying Gemini API manually
+    return jsonify({
+        "results": [
+            {
+                "id": 1,
+                "category": "Keyboard",
+                "name": "Flask Managed Custom Keyboard",
+                "price": 150,
+                "match": 98,
+                "badge": "Backend Sync",
+                "desc": "Perfect hardware recommended via Python server.",
+                "specs": ["Silent linear switches", "Premium metal build", "PBT Keycaps"]
+            }
+        ]
+    })
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)</pre>
-        </div>
-
-        <!-- Connection Settings Toggle -->
-        <div class="bg-white/5 border border-obsidian-border rounded-xl p-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h4 class="text-sm font-semibold text-white">Select Live Engine Connection</h4>
-              <p class="text-xs text-neutral-400">Swap between simulated responses inside Javascript or active Python fetch routing.</p>
-            </div>
-            <div class="flex gap-2">
-              <button id="engine-local" onclick="setEngineMode('local')" class="px-4 py-2 text-xs font-mono border border-white/20 bg-white/10 text-white rounded-lg transition-all">
-                MOCK CLIENT
-              </button>
-              <button id="engine-python" onclick="setEngineMode('python')" class="px-4 py-2 text-xs font-mono border border-obsidian-border bg-transparent text-neutral-500 rounded-lg transition-all hover:border-neutral-700">
-                PYTHON API (POST)
-              </button>
-            </div>
-          </div>
-          <div class="mt-3 text-xs font-mono text-neutral-500 flex items-center gap-2">
-            <i data-lucide="info" class="w-3.5 h-3.5 text-neutral-400"></i>
-            <span id="engine-status">Active mode: Mock Client Engine. Perfect for UI simulation and design prototyping.</span>
-          </div>
         </div>
       </section>
 
@@ -408,11 +407,10 @@ if __name__ == '__main__':
         budget: 1200,
         ergonomics: 'Balanced',
         tone: 'Obsidian Minimalist',
-        query: '',
-        engineMode: 'local' // or 'python'
+        query: ''
       };
 
-      // Mock DB for dynamic local simulations
+      // Mock DB for dynamic fallback simulations
       const mockHardwareDB = [
         {
           id: 101,
@@ -422,7 +420,7 @@ if __name__ == '__main__':
           match: 99,
           badge: "Obsidian Favorite",
           desc: "Unbelievably low profile mechanical with custom linear switches. Designed with zero reflections and stealth dark keys.",
-          specs: ["Double-shot PBT keycaps", "Hot-swappable", "OLED Ambient indicator"],
+          specs: ["Double-shot PBT keycaps", "Hot-swappable Layout", "OLED Ambient indicator"],
           style: "Obsidian Minimalist"
         },
         {
@@ -519,7 +517,13 @@ if __name__ == '__main__':
       window.onload = function() {
         lucide.createIcons();
         renderProducts(mockHardwareDB.filter(p => p.style === "Obsidian Minimalist"));
+        updateStatus();
       };
+
+      function updateStatus() {
+        const badge = document.getElementById('status-badge');
+        badge.classList.remove('hidden');
+      }
 
       // Set input from quick prompts
       function setQuery(text) {
@@ -562,16 +566,29 @@ if __name__ == '__main__':
       }
 
       // Show temporary custom toasts
-      function showToast(text) {
+      function showToast(text, isError = false) {
         const toast = document.getElementById('toast');
-        document.getElementById('toast-text').innerText = text;
+        const icon = document.getElementById('toast-icon');
+        const textSpan = document.getElementById('toast-text');
+
+        textSpan.innerText = text;
+        if (isError) {
+          icon.setAttribute('data-lucide', 'alert-triangle');
+          icon.className = "text-yellow-400 w-5 h-5";
+        } else {
+          icon.setAttribute('data-lucide', 'check-circle');
+          icon.className = "text-emerald-400 w-5 h-5";
+        }
+        
+        lucide.createIcons();
+
         toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
         toast.classList.add('translate-y-0', 'opacity-100');
         
         setTimeout(() => {
           toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
           toast.classList.remove('translate-y-0', 'opacity-100');
-        }, 3000);
+        }, 3500);
       }
 
       // Toggle dev panel view
@@ -583,25 +600,7 @@ if __name__ == '__main__':
         }
       }
 
-      // Set backend engine choice (local simulation vs python connection)
-      function setEngineMode(mode) {
-        state.engineMode = mode;
-        const localBtn = document.getElementById('engine-local');
-        const pythonBtn = document.getElementById('engine-python');
-        const statusText = document.getElementById('engine-status');
-
-        if(mode === 'local') {
-          localBtn.className = "px-4 py-2 text-xs font-mono border border-white/20 bg-white/10 text-white rounded-lg transition-all";
-          pythonBtn.className = "px-4 py-2 text-xs font-mono border border-obsidian-border bg-transparent text-neutral-500 rounded-lg transition-all hover:border-neutral-700";
-          statusText.innerText = "Active mode: Mock Client Engine. Perfect for UI simulation and design prototyping.";
-        } else {
-          pythonBtn.className = "px-4 py-2 text-xs font-mono border border-white/20 bg-white/10 text-white rounded-lg transition-all";
-          localBtn.className = "px-4 py-2 text-xs font-mono border border-obsidian-border bg-transparent text-neutral-500 rounded-lg transition-all hover:border-neutral-700";
-          statusText.innerText = "Active mode: Python API Mode. Submits standard JSON POST requests directly to localhost:5000/api/recommend.";
-        }
-      }
-
-      // Copy text code boilerplate using fallback copy approach safely inside canvases
+      // Copy text code boilerplate
       function copyPythonCode() {
         const text = document.getElementById('python-boilerplate').innerText;
         const elem = document.createElement('textarea');
@@ -613,8 +612,8 @@ if __name__ == '__main__':
         showToast('Python boilerplate copied!');
       }
 
-      // Synthesize recommendations trigger
-      function handleGenerate(event) {
+      // Main Gemini generation call with custom fallback handling
+      async function handleGenerate(event) {
         event.preventDefault();
         const query = document.getElementById('search-input').value;
         state.query = query;
@@ -623,69 +622,137 @@ if __name__ == '__main__':
         document.getElementById('results-container').classList.add('hidden');
         document.getElementById('results-loading').classList.remove('hidden');
 
-        if(state.engineMode === 'local') {
-          // Fake high-tech analysis latency (Unseen Style Loading delay)
+        // Configure API Keys (Checks for local debug keys or default keys)
+        const apiKey = ""; // Left empty to support dynamic Canvas platform runtime inject
+        const customKey = document.getElementById('custom-api-key').value;
+        const activeKey = customKey || apiKey;
+
+        if (!activeKey) {
+          // If no API Key is populated yet, run ultra-fast high-fidelity offline fallback mapping
           setTimeout(() => {
-            // Pick mock recommendations matching target style category
             const results = mockHardwareDB.filter(p => p.style === state.tone && p.price <= state.budget);
-            
             document.getElementById('results-loading').classList.add('hidden');
             document.getElementById('results-container').classList.remove('hidden');
             
             if(results.length > 0) {
               renderProducts(results);
-              document.getElementById('result-meta').innerText = `SYNTHESIZED IN 0.8s • ${results.length} MATCHES`;
-              showToast('Synthesized layout matches!');
+              document.getElementById('result-meta').innerText = `LOCAL OFFLINE ENGINE • ${results.length} SETUP MATCHES`;
+              showToast('Synthesized hardware layout from internal library!');
             } else {
-              // Generate budget adaptation
               const budgetAdaption = mockHardwareDB.filter(p => p.style === state.tone);
               renderProducts(budgetAdaption);
-              document.getElementById('result-meta').innerText = `AUTO-ADAPTED BUDGET • ${budgetAdaption.length} RECOMMENDATIONS`;
-              showToast('Exceeded budget target. Adaptive recommendations rendered.');
+              document.getElementById('result-meta').innerText = `LOCAL ADAPTED SELECTION • PROCEEDING WITH STACK`;
+              showToast('Exceeded budget constraints. Adaptive defaults rendered.');
             }
-          }, 1100);
+          }, 1000);
+          return;
+        }
+
+        // Setup payloads
+        const systemPrompt = `You are Circuitly, an expert hardware pairing architect. 
+Construct EXACTLY 3 clean, highly-cohesive tech hardware setup items (e.g., keyboard, mouse, lights, desk pads, sound gear).
+Keep all items safe, highly healthy, legal, appropriate, and strictly work/gaming/school study focused.
+
+Requirements:
+- Total combined price of the 3 items must fit under or within 10% of the User Budget of $${state.budget}.
+- Aesthetic theme style MUST correspond with: ${state.tone}.
+- Align recommendations with specified Ergonomics Focus priority: ${state.ergonomics}.
+- Render output ONLY matching the structured JSON responses template specified.`;
+
+        const userPrompt = `Query: "${state.query}"\nBudget Cap: $${state.budget}\nWorkspace Style: ${state.tone}\nErgonomic Level: ${state.ergonomics}`;
+
+        const payload = {
+          contents: [{ parts: [{ text: userPrompt }] }],
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                results: {
+                  type: "ARRAY",
+                  description: "Always exactly 3 hardware items",
+                  items: {
+                    type: "OBJECT",
+                    properties: {
+                      id: { type: "INTEGER" },
+                      category: { type: "STRING" },
+                      name: { type: "STRING" },
+                      price: { type: "INTEGER" },
+                      match: { type: "INTEGER" },
+                      badge: { type: "STRING" },
+                      desc: { type: "STRING" },
+                      specs: {
+                        type: "ARRAY",
+                        items: { type: "STRING" }
+                      }
+                    },
+                    required: ["id", "category", "name", "price", "match", "badge", "desc", "specs"]
+                  }
+                }
+              },
+              required: ["results"]
+            }
+          }
+        };
+
+        const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${activeKey}`;
+
+        // Send fetch request with 5x Exponential Backoff Retry Loop
+        let backoffDelay = 1000;
+        let success = false;
+        let responseData = null;
+
+        for (let attempt = 0; attempt < 5; attempt++) {
+          try {
+            const apiResponse = await fetch(targetUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+
+            if (!apiResponse.ok) {
+              throw new Error(`API Status Code: ${apiResponse.status}`);
+            }
+
+            const rawJson = await apiResponse.json();
+            const textResponse = rawJson.candidates?.[0]?.content?.parts?.[0]?.text;
+            responseData = JSON.parse(textResponse);
+            success = true;
+            break;
+          } catch (error) {
+            console.warn(`Gemini Request Attempt ${attempt + 1} failed. Retrying...`);
+            if (attempt === 4) {
+              console.error("All Gemini API attempts failed: ", error);
+            } else {
+              await new Promise(r => setTimeout(r, backoffDelay));
+              backoffDelay *= 2;
+            }
+          }
+        }
+
+        // UI Reset and Display
+        document.getElementById('results-loading').classList.add('hidden');
+        document.getElementById('results-container').classList.remove('hidden');
+
+        if (success && responseData && responseData.results) {
+          renderProducts(responseData.results);
+          document.getElementById('result-meta').innerText = `LIVE GEMINI AI SYNTHESIS • 3 DYNAMIC PIECES`;
+          showToast('Hardware successfully synthesized via live Gemini AI!');
         } else {
-          // Send request down to active localhost API
-          fetch('http://localhost:5000/api/recommend', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              query: state.query,
-              budget: state.budget,
-              ergonomics: state.ergonomics,
-              aesthetic: state.tone
-            })
-          })
-          .then(res => res.json())
-          .then(data => {
-            document.getElementById('results-loading').classList.add('hidden');
-            document.getElementById('results-container').classList.remove('hidden');
-            if (data.results) {
-              renderProducts(data.results);
-              document.getElementById('result-meta').innerText = `PYTHON API RESPONSE • SUCCESS`;
-              showToast('Received suggestions from Python API');
-            }
-          })
-          .catch(err => {
-            console.error("Local python server connection failed. Swapped to fallback interface.", err);
-            document.getElementById('results-loading').classList.add('hidden');
-            document.getElementById('results-container').classList.remove('hidden');
-            showToast('Python endpoint down. Fallback simulation rendered.');
-            // Render beautiful mockup instead
-            renderProducts(mockHardwareDB.filter(p => p.style === state.tone));
-          });
+          // Failure failover
+          showToast('Live Gemini query failed. Loaded offline library fallback.', true);
+          renderProducts(mockHardwareDB.filter(p => p.style === state.tone));
+          document.getElementById('result-meta').innerText = `FALLBACK ENGINE • OFFLINE PORTFOLIO ACTIVE`;
         }
       }
 
-      // Beautiful dynamic layout card generator
+      // Dynamic layout card generator
       function renderProducts(products) {
         const container = document.getElementById('results-container');
         container.innerHTML = '';
 
         products.forEach(p => {
-          // Create specs list items
           let specsHTML = '';
           if(p.specs && p.specs.length > 0) {
             specsHTML = p.specs.map(spec => `
@@ -700,7 +767,6 @@ if __name__ == '__main__':
           card.className = "group bg-obsidian-card border border-obsidian-border rounded-xl p-5 hover:border-white/20 transition-all duration-300 flex flex-col justify-between hover:translate-y-[-2px] relative overflow-hidden";
           
           card.innerHTML = `
-            <!-- Top Card Frame Elements -->
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="text-[10px] font-mono bg-white/[0.04] text-neutral-400 px-2 py-0.5 rounded-full border border-obsidian-border">
@@ -718,14 +784,13 @@ if __name__ == '__main__':
               </p>
             </div>
 
-            <!-- Bottom Specs Integration & Action Info -->
             <div class="mt-4 pt-4 border-t border-obsidian-border flex flex-col gap-3">
               <ul class="space-y-1">
                 ${specsHTML}
               </ul>
               <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.02]">
                 <span class="text-[10px] font-mono text-cyan-400 flex items-center gap-1">
-                  <i data-lucide="cpu" class="w-3 h-3"></i> ${p.match}% Setup Match
+                  <i data-lucide="cpu" class="w-3 h-3"></i> ${p.match}% Match
                 </span>
                 <button onclick="copySpecs('${p.name}')" class="text-[10px] font-mono text-neutral-500 hover:text-white transition-colors flex items-center gap-1">
                   <i data-lucide="copy" class="w-3 h-3"></i> Copy Specs
@@ -736,11 +801,10 @@ if __name__ == '__main__':
           container.appendChild(card);
         });
 
-        // Initialize lucide dynamic elements inside innerHTML
         lucide.createIcons();
       }
 
-      // Copy simple specifications target helper
+      // Copy specification details helper
       function copySpecs(name) {
         const elem = document.createElement('textarea');
         elem.value = `Circuitly match specs output: ${name}`;
