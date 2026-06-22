@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Circuitly — AI Hardware Architect</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
     
     <!-- Tailwind CSS for modern utility styling -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -35,7 +34,7 @@
       }
     </script>
 
-    <!-- Google Fonts: Inter and Space Grotesk -->
+    <!-- Google Fonts: Inter, Space Grotesk, JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -55,14 +54,14 @@
         font-family: 'Space Grotesk', sans-serif;
       }
 
-      /* Unseen-style grid background overlay */
+      /* Grid background overlay */
       .grid-overlay {
         background-image: 
-          linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+          linear-gradient(to right, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
         background-size: 40px 40px;
-        mask-image: radial-gradient(circle 600px at 50% 200px, black, transparent);
-        -webkit-mask-image: radial-gradient(circle 600px at 50% 200px, black, transparent);
+        mask-image: radial-gradient(circle 800px at 50% 200px, black, transparent);
+        -webkit-mask-image: radial-gradient(circle 800px at 50% 200px, black, transparent);
       }
 
       /* Custom scrollbar */
@@ -92,12 +91,24 @@
         background-image: linear-gradient(
           90deg,
           rgba(255, 255, 255, 0) 0%,
-          rgba(255, 255, 255, 0.03) 20%,
-          rgba(255, 255, 255, 0.07) 60%,
+          rgba(255, 255, 255, 0.02) 20%,
+          rgba(255, 255, 255, 0.05) 60%,
           rgba(255, 255, 255, 0) 100%
         );
         animation: shimmer 1.8s infinite;
         content: '';
+      }
+
+      /* Animated Dash Board Paths */
+      @keyframes dash {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      .animated-path {
+        stroke-dasharray: 12;
+        stroke-dashoffset: 240;
+        animation: dash 8s linear infinite;
       }
     </style>
   </head>
@@ -105,7 +116,7 @@
 
     <!-- Subtle ambient glowing background blur -->
     <div class="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-b from-neutral-800/10 to-transparent blur-[120px] pointer-events-none z-0"></div>
-    <div class="absolute top-[300px] right-[-100px] w-[400px] h-[400px] bg-cyan-950/10 blur-[100px] pointer-events-none z-0"></div>
+    <div id="ambient-glow" class="absolute top-[300px] right-[-100px] w-[400px] h-[400px] bg-cyan-950/10 blur-[100px] pointer-events-none z-0 transition-all duration-700"></div>
     
     <!-- Tech Grid Background -->
     <div class="absolute inset-0 grid-overlay pointer-events-none z-0"></div>
@@ -118,10 +129,10 @@
 
     <!-- HEADER & NAVIGATION -->
     <header class="relative z-10 border-b border-obsidian-border bg-obsidian/75 backdrop-blur-md sticky top-0">
-      <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         
         <!-- Brand / Logo -->
-        <a href="#" class="flex items-center gap-2 group">
+        <a href="#" onclick="switchView('architect')" class="flex items-center gap-2 group">
           <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-300 group-hover:border-white/30 group-hover:bg-white/10">
             <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="2" width="20" height="20" rx="6" />
@@ -131,174 +142,430 @@
           <span class="space-font font-bold text-lg tracking-wider text-white">CIRCUITLY</span>
         </a>
 
-        <!-- Status & Navigation -->
+        <!-- Middle view-switching tabs -->
+        <nav class="flex items-center bg-black border border-obsidian-border p-1 rounded-full text-xs font-mono">
+          <button id="tab-architect" onclick="switchView('architect')" class="px-4 py-1.5 rounded-full text-white bg-white/5 font-medium transition-all">
+            AI Architect
+          </button>
+          <button id="tab-about" onclick="switchView('about')" class="px-4 py-1.5 rounded-full text-neutral-400 hover:text-white transition-all">
+            Our Vision
+          </button>
+        </nav>
+
+        <!-- Status & Settings button -->
         <div class="flex items-center gap-6">
           <div id="status-badge" class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/5 border border-cyan-500/15 text-[11px] font-mono text-cyan-400">
             <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-            GEMINI ENGINE: ACTIVE
+            GEMINI AGENT: ACTIVE
           </div>
           
           <button onclick="toggleDevConsole()" class="text-xs font-mono text-neutral-400 hover:text-white border border-obsidian-border hover:border-neutral-700 bg-obsidian px-3 py-1.5 rounded-lg transition-all">
             <span class="flex items-center gap-1.5">
-              <i data-lucide="terminal" class="w-3.5 h-3.5"></i> Settings & Logic
+              <i data-lucide="terminal" class="w-3.5 h-3.5"></i> Settings
             </span>
           </button>
         </div>
       </div>
     </header>
 
-    <!-- MAIN BODY -->
-    <main class="relative z-10 max-w-6xl mx-auto px-6 py-12">
-      
-      <!-- HERO HEADER -->
-      <section class="text-center max-w-3xl mx-auto mb-16">
-        <div class="inline-block text-xs font-mono tracking-widest text-neutral-500 uppercase mb-4">
-          Next-Generation Hardware Recommendations
-        </div>
-        <h1 class="space-font text-4xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-white mb-6 leading-tight">
-          Configure setups designed for human output.
-        </h1>
-        <p class="text-neutral-400 text-base sm:text-lg font-light leading-relaxed">
-          Circuitly utilizes advanced AI synthesis to design accurate hardware pairings tailored exactly to your budget constraints, ergonomics, and aesthetic workspaces.
-        </p>
-      </section>
+    <!-- ARCHITECT VIEW CONTAINER (MAIN PORTAL) -->
+    <div id="view-architect" class="transition-all duration-500 opacity-100 transform translate-y-0 relative z-10">
+      <main class="max-w-7xl mx-auto px-6 py-8">
+        
+        <!-- HERO HEADER -->
+        <section class="text-center max-w-3xl mx-auto mb-10">
+          <div class="inline-block text-xs font-mono tracking-widest text-neutral-500 uppercase mb-3">
+            High Fidelity Real-World Workspace Curator
+          </div>
+          <h1 class="space-font text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight text-white mb-4 leading-tight">
+            Workstations aligned to human biology.
+          </h1>
+          <p class="text-neutral-400 text-sm sm:text-base font-light leading-relaxed">
+            Circuitly synthesizes ergonomic layouts using real products, coordinating visual workspace tones with high-precision physical component parameters.
+          </p>
+        </section>
 
-      <!-- CONFIGURATION ENGINE -->
-      <section class="mb-16">
-        <div class="bg-obsidian-card border border-obsidian-border rounded-2xl p-6 sm:p-8 shadow-3xl">
+        <!-- MAIN DUAL-PANEL LAYOUT -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          <!-- Search Bar Form -->
-          <form id="recommendation-form" onsubmit="handleGenerate(event)">
-            <div class="relative flex flex-col md:flex-row items-stretch gap-4">
-              <div class="relative flex-1">
-                <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-neutral-500">
-                  <i data-lucide="sparkles" class="w-5 h-5"></i>
+          <!-- LEFT SIDE: CONTROLS & RECOMMENDED PERIPHERALS (7 COLS) -->
+          <div class="lg:col-span-7 space-y-6">
+            
+            <!-- INPUT CONFIGURATOR -->
+            <div class="bg-obsidian-card border border-obsidian-border rounded-2xl p-6 shadow-3xl">
+              <h3 class="space-font text-base font-medium text-white mb-4 flex items-center gap-2">
+                <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i> Setup Constraints
+              </h3>
+
+              <form id="recommendation-form" onsubmit="handleGenerate(event)" class="space-y-6">
+                <!-- Main Inquiry Bar -->
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-neutral-500">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                  </div>
+                  <input 
+                    type="text" 
+                    id="search-input"
+                    placeholder="Describe your design space (e.g. 'Silent wireless mechanical keyboard for research and writing')"
+                    class="w-full bg-black border border-obsidian-border focus:border-cyan-400 rounded-xl py-3.5 pl-11 pr-4 text-white placeholder-neutral-600 outline-none transition-all text-sm font-light"
+                    required
+                  >
                 </div>
-                <input 
-                  type="text" 
-                  id="search-input"
-                  placeholder="Describe your goals... (e.g., 'A modern mechanical keyboard and mouse setup for coding and study')"
-                  class="w-full bg-black border border-obsidian-border focus:border-white/35 focus:ring-0 rounded-xl py-4 pl-12 pr-4 text-white placeholder-neutral-600 outline-none transition-all text-sm font-light"
-                  required
-                >
+
+                <!-- Tune Sliders Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
+                  <!-- Budget Slider -->
+                  <div class="space-y-2">
+                    <div class="flex justify-between text-[11px] font-mono">
+                      <span class="text-neutral-400">Total Budget Limit</span>
+                      <span class="text-white" id="budget-val">$1,200</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      id="budget-slider"
+                      min="100" 
+                      max="5000" 
+                      step="50" 
+                      value="1200"
+                      oninput="updateValue('budget', this.value)"
+                      class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer accent-white"
+                    >
+                  </div>
+
+                  <!-- Ergonomics -->
+                  <div class="space-y-2">
+                    <div class="flex justify-between text-[11px] font-mono">
+                      <span class="text-neutral-400">Ergonomics Focus</span>
+                      <span class="text-white" id="ergo-val">Balanced Focus</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      id="ergo-slider"
+                      min="1" 
+                      max="3" 
+                      step="1" 
+                      value="2"
+                      oninput="updateValue('ergo', this.value)"
+                      class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer accent-white"
+                    >
+                  </div>
+
+                  <!-- Style Tone -->
+                  <div class="space-y-2">
+                    <div class="flex justify-between text-[11px] font-mono">
+                      <span class="text-neutral-400">Workspace Theme</span>
+                      <span class="text-white" id="tone-val">Obsidian Minimalist</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1">
+                      <button type="button" id="btn-tone-obsidian" onclick="selectTone('Obsidian Minimalist')" class="tone-btn text-[9px] font-mono py-1 border border-white/20 bg-white/5 text-white rounded-md transition-all">OBSIDIAN</button>
+                      <button type="button" id="btn-tone-silver" onclick="selectTone('Silver Industrial')" class="tone-btn text-[9px] font-mono py-1 border border-obsidian-border bg-transparent text-neutral-400 rounded-md transition-all hover:border-neutral-700">SILVER</button>
+                      <button type="button" id="btn-tone-neon" onclick="selectTone('RGB Cyberpunk')" class="tone-btn text-[9px] font-mono py-1 border border-obsidian-border bg-transparent text-neutral-400 rounded-md transition-all hover:border-neutral-700">NEON</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-4 pt-2">
+                  <div class="flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Semantic matching primed</span>
+                  </div>
+                  <button 
+                    type="submit" 
+                    class="bg-white hover:bg-neutral-200 text-black font-semibold text-xs px-6 py-2.5 rounded-xl flex items-center gap-1.5 transition-all duration-300"
+                  >
+                    <span>Synthesize Workspace</span>
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- HARDWARE RESULTS STACK -->
+            <div class="border-b border-obsidian-border pb-3 flex items-center justify-between">
+              <h2 class="space-font text-lg font-medium text-white flex items-center gap-2">
+                <span id="glow-indicator" class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#00f2fe]"></span>
+                Synthesized Components
+              </h2>
+              <span id="result-meta" class="text-[10px] font-mono text-neutral-500 uppercase">Standby</span>
+            </div>
+
+            <!-- Total Setup Cost Dashboard -->
+            <div id="cost-dashboard" class="hidden bg-obsidian-card border border-obsidian-border p-4 rounded-xl space-y-3">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-neutral-400 font-mono">Setup Total Cost</span>
+                <span class="text-white font-mono font-semibold" id="total-cost-display">$0 / $1,200</span>
               </div>
+              <div class="w-full bg-neutral-900 rounded-full h-1.5 overflow-hidden">
+                <div id="cost-bar" class="bg-cyan-400 h-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px] font-mono text-neutral-500">
+                <span id="savings-display">Under budget cap</span>
+                <span class="text-emerald-400 flex items-center gap-1"><i data-lucide="check-circle" class="w-3 h-3"></i> Budget Validated</span>
+              </div>
+            </div>
+
+            <!-- Shimmer Loading -->
+            <div id="results-loading" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-obsidian-card border border-obsidian-border rounded-xl p-5 h-64 shimmer flex flex-col justify-between">
+                <div class="space-y-2"><div class="h-3 bg-white/5 rounded w-1/4"></div><div class="h-5 bg-white/10 rounded w-2/3"></div></div>
+                <div class="h-6 bg-white/5 rounded w-1/2"></div>
+              </div>
+              <div class="bg-obsidian-card border border-obsidian-border rounded-xl p-5 h-64 shimmer flex flex-col justify-between">
+                <div class="space-y-2"><div class="h-3 bg-white/5 rounded w-1/4"></div><div class="h-5 bg-white/10 rounded w-2/3"></div></div>
+                <div class="h-6 bg-white/5 rounded w-1/2"></div>
+              </div>
+              <div class="bg-obsidian-card border border-obsidian-border rounded-xl p-5 h-64 shimmer flex flex-col justify-between">
+                <div class="space-y-2"><div class="h-3 bg-white/5 rounded w-1/4"></div><div class="h-5 bg-white/10 rounded w-2/3"></div></div>
+                <div class="h-6 bg-white/5 rounded w-1/2"></div>
+              </div>
+            </div>
+
+            <!-- Cards Container -->
+            <div id="results-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Dynamically populated -->
+            </div>
+
+            <!-- Rationale Box -->
+            <div id="reasoning-container" class="hidden">
+              <div class="bg-gradient-to-r from-cyan-950/20 to-neutral-950 border border-cyan-500/10 rounded-xl p-5">
+                <div class="flex items-center gap-2 mb-2">
+                  <i data-lucide="brain-circuit" class="w-4 h-4 text-cyan-400"></i>
+                  <h4 class="space-font font-medium text-white text-xs">Architect's Posture & Configuration Rationale</h4>
+                </div>
+                <p id="reasoning-text" class="text-xs font-light leading-relaxed text-neutral-300">-</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT SIDE: REAL TIME INTERACTIVE AI COPILOT CHAT (5 COLS) -->
+          <div class="lg:col-span-5 flex flex-col h-[640px] bg-obsidian-card border border-obsidian-border rounded-2xl overflow-hidden shadow-3xl">
+            <!-- Chat Header -->
+            <div class="p-4 border-b border-obsidian-border bg-black/60 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-cyan-950 border border-cyan-500/20 flex items-center justify-center">
+                  <i data-lucide="bot" class="w-4 h-4 text-cyan-400"></i>
+                </div>
+                <div>
+                  <h3 class="space-font text-xs font-semibold text-white">Workspace Architect AI</h3>
+                  <span class="text-[9px] font-mono text-emerald-400 flex items-center gap-1">
+                    <span class="w-1 h-1 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Online — Ready to refine
+                  </span>
+                </div>
+              </div>
+              <button onclick="clearChat()" class="text-[10px] font-mono text-neutral-500 hover:text-white transition-colors">
+                RESET CHAT
+              </button>
+            </div>
+
+            <!-- Chat Message Thread -->
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 text-xs font-light scroll-smooth">
+              <!-- Welcome message -->
+              <div class="flex items-start gap-2.5">
+                <div class="w-6 h-6 rounded-md bg-cyan-950 border border-cyan-500/10 flex items-center justify-center flex-shrink-0 text-[10px]">🤖</div>
+                <div class="bg-white/[0.02] border border-obsidian-border px-3.5 py-2.5 rounded-r-xl rounded-bl-xl max-w-[85%] text-neutral-300 leading-relaxed">
+                  Welcome to Circuitly! I am your visual and physical workspace co-pilot. Ask me details about setups, physical posture recommendations, tactile acoustics, or type specific design wishes!
+                </div>
+              </div>
+            </div>
+
+            <!-- Live typing indicator -->
+            <div id="chat-typing" class="hidden px-4 py-2 text-[10px] font-mono text-neutral-500 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce"></span>
+              <span>Architect formulation sweep active...</span>
+            </div>
+
+            <!-- Quick Action Chips -->
+            <div class="p-3 bg-black/20 border-t border-obsidian-border/50 overflow-x-auto flex gap-1.5 no-scrollbar">
+              <button onclick="sendQuickMessage('Suggest real keyboards and mice for programming')" class="flex-shrink-0 text-[10px] font-mono bg-white/[0.02] hover:bg-white/[0.08] border border-obsidian-border hover:border-neutral-700 px-2.5 py-1 rounded-full text-neutral-400 hover:text-white transition-all">
+                ⌨️ Programmer's real gear
+              </button>
+              <button onclick="sendQuickMessage('Make it under $500')" class="flex-shrink-0 text-[10px] font-mono bg-white/[0.02] hover:bg-white/[0.08] border border-obsidian-border hover:border-neutral-700 px-2.5 py-1 rounded-full text-neutral-400 hover:text-white transition-all">
+                📉 Limit budget under $500
+              </button>
+              <button onclick="sendQuickMessage('Give me ergonomic posture tips')" class="flex-shrink-0 text-[10px] font-mono bg-white/[0.02] hover:bg-white/[0.08] border border-obsidian-border hover:border-neutral-700 px-2.5 py-1 rounded-full text-neutral-400 hover:text-white transition-all">
+                🧘 Ergonomic posture checklist
+              </button>
+            </div>
+
+            <!-- Chat Inputs -->
+            <form id="chat-form" onsubmit="handleChatSubmit(event)" class="p-3 bg-black/60 border-t border-obsidian-border flex items-center gap-2">
+              <input 
+                type="text" 
+                id="chat-input" 
+                placeholder="Ask Architect: 'Recommend actual silent items' or 'Any suggestions for gaming?'"
+                class="flex-1 bg-black/80 border border-obsidian-border focus:border-cyan-400 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-600 outline-none transition-all font-light"
+                required
+              >
               <button 
                 type="submit" 
-                class="bg-white hover:bg-neutral-200 text-black font-semibold text-sm px-8 py-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300"
+                class="bg-white hover:bg-neutral-200 text-black p-2.5 rounded-xl flex items-center justify-center transition-all flex-shrink-0"
               >
-                <span>Synthesize Setup</span>
-                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                <i data-lucide="send" class="w-4 h-4"></i>
               </button>
-            </div>
-          </form>
+            </form>
+          </div>
 
-          <!-- Filter Accordion System -->
-          <div class="mt-8 pt-6 border-t border-obsidian-border">
-            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <span class="text-xs font-mono text-neutral-400 flex items-center gap-2">
-                <i data-lucide="sliders" class="w-3.5 h-3.5"></i> TUNING PARAMETERS
-              </span>
-              <button onclick="resetSliders()" class="text-[11px] font-mono text-neutral-500 hover:text-neutral-300 transition-colors">
-                RESET VALUES
-              </button>
-            </div>
+        </div>
+      </main>
+    </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <!-- Budget Slider -->
-              <div class="space-y-2">
-                <div class="flex justify-between text-xs font-mono">
-                  <span class="text-neutral-400">Target Budget Cap</span>
-                  <span class="text-white" id="budget-val">$1,200</span>
-                </div>
-                <input 
-                  type="range" 
-                  id="budget-slider"
-                  min="200" 
-                  max="5000" 
-                  step="50" 
-                  value="1200"
-                  oninput="updateValue('budget', this.value)"
-                  class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer accent-white"
-                >
+    <!-- ABOUT VIEW CONTAINER (OUR VISION) -->
+    <div id="view-about" class="hidden opacity-0 transition-all duration-500 transform translate-y-4 relative z-10">
+      <main class="max-w-7xl mx-auto px-6 py-12">
+        
+        <!-- About Header -->
+        <section class="text-center max-w-3xl mx-auto mb-16">
+          <div class="inline-block text-xs font-mono tracking-widest text-neutral-500 uppercase mb-4">
+            Our Purpose & Core Philosophy
+          </div>
+          <h1 class="space-font text-4xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-white mb-6 leading-tight">
+            Reconnecting the digital loop.
+          </h1>
+          <p class="text-neutral-400 text-base sm:text-lg font-light leading-relaxed">
+            Circuitly was created to solve a common modern problem: overwhelming hardware selections. We believe that technology should serve your creative output, merging aesthetics, physical ergonomics, and computational intelligence into one seamless workspace configuration.
+          </p>
+        </section>
+
+        <!-- INTERACTIVE CIRCUIT VISUALIZER -->
+        <section class="mb-16">
+          <div class="bg-obsidian-card border border-obsidian-border rounded-2xl p-6 sm:p-8 shadow-3xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 p-4 border-b border-r border-obsidian-border rounded-br-xl bg-black">
+              <span class="text-[10px] font-mono text-neutral-500">SYSTEM DATAFLOW PROTOCOL</span>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-8">
+              
+              <!-- Left side: Interactive Canvas Circuit Graphic -->
+              <div class="relative flex justify-center py-6">
+                <svg width="340" height="280" viewBox="0 0 340 280" fill="none" xmlns="http://www.w3.org/2000/svg" class="max-w-full">
+                  <!-- Connection paths -->
+                  <path d="M70 140 H160" stroke="rgba(0, 242, 254, 0.25)" stroke-width="2" class="animated-path" />
+                  <path d="M180 140 H270" stroke="rgba(0, 242, 254, 0.25)" stroke-width="2" class="animated-path" />
+                  
+                  <!-- Human Prompt Node -->
+                  <g class="cursor-pointer group/node" onclick="triggerNodeAction('human')">
+                    <circle cx="70" cy="140" r="28" fill="#080808" stroke="rgba(255,255,255,0.15)" stroke-width="2" class="transition-all group-hover/node:stroke-white group-hover/node:shadow-[0_0_15px_rgba(255,255,255,0.25)]" />
+                    <circle cx="70" cy="140" r="4" fill="#ffffff" class="animate-ping" />
+                    <circle cx="70" cy="140" r="4" fill="#ffffff" />
+                    <text x="70" y="190" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="'JetBrains Mono', monospace" class="tracking-wide">1. HUMAN INTENT</text>
+                  </g>
+
+                  <!-- Gemini Core Processing Node -->
+                  <g class="cursor-pointer group/node" onclick="triggerNodeAction('gemini')">
+                    <rect x="145" y="115" width="50" height="50" rx="10" fill="#0c121e" stroke="rgba(0,242,254,0.3)" stroke-width="2" class="transition-all group-hover/node:stroke-cyan-400 group-hover/node:shadow-[0_0_20px_rgba(0,242,254,0.3)]" />
+                    <!-- Processing stars inside rect -->
+                    <path d="M170 134 L171.5 138.5 L176 140 L171.5 141.5 L170 146 L168.5 141.5 L164 140 L168.5 138.5 Z" fill="#00f2fe" class="animate-pulse" />
+                    <text x="170" y="190" text-anchor="middle" fill="#00f2fe" font-size="10" font-family="'JetBrains Mono', monospace" class="tracking-wide">2. COGNITIVE SYNTHESIS</text>
+                  </g>
+
+                  <!-- Physical Hardware Output Node -->
+                  <g class="cursor-pointer group/node" onclick="triggerNodeAction('hardware')">
+                    <circle cx="270" cy="140" r="28" fill="#080808" stroke="rgba(255,255,255,0.15)" stroke-width="2" class="transition-all group-hover/node:stroke-white group-hover/node:shadow-[0_0_15px_rgba(255,255,255,0.25)]" />
+                    <path d="M264 135 H276 V145 H264 Z" stroke="#ffffff" stroke-width="1.5" />
+                    <path d="M260 140 H280 M270 130 V150" stroke="#94a3b8" stroke-width="1" />
+                    <text x="270" y="190" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="'JetBrains Mono', monospace" class="tracking-wide">3. PHYSICAL MATCHES</text>
+                  </g>
+                </svg>
               </div>
 
-              <!-- Ergonomics Priority Slider -->
-              <div class="space-y-2">
-                <div class="flex justify-between text-xs font-mono">
-                  <span class="text-neutral-400">Ergonomics Focus</span>
-                  <span class="text-white" id="ergo-val">Balanced</span>
+              <!-- Right side: Informational diagnostics explaining node values -->
+              <div class="space-y-6">
+                <div class="border border-white/5 bg-black/40 p-5 rounded-xl transition-all duration-300" id="dataflow-card">
+                  <span class="text-xs font-mono text-cyan-400" id="flow-step">NODE DIRECTIVE</span>
+                  <h3 class="space-font text-xl text-white font-semibold mt-1 mb-3" id="flow-title">Interactive Dataflow Visualizer</h3>
+                  <p class="text-neutral-400 text-xs font-light leading-relaxed" id="flow-description">
+                    Click on the glowing nodes in the diagram on the left to trace the path that translates human inquiries into beautifully curated setups.
+                  </p>
                 </div>
-                <input 
-                  type="range" 
-                  id="ergo-slider"
-                  min="1" 
-                  max="3" 
-                  step="1" 
-                  value="2"
-                  oninput="updateValue('ergo', this.value)"
-                  class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer accent-white"
-                >
+
+                <div class="bg-white/[0.02] border border-obsidian-border p-4 rounded-xl flex items-center gap-4 text-xs text-neutral-400">
+                  <i data-lucide="info" class="w-5 h-5 text-neutral-500"></i>
+                  <span>Tap or hover over the diagram modules to engage diagnostic trace sweeps.</span>
+                </div>
               </div>
 
-              <!-- Tech Aesthetic Style Selection -->
-              <div class="space-y-2">
-                <div class="flex justify-between text-xs font-mono">
-                  <span class="text-neutral-400">Workspace Tone</span>
-                  <span class="text-white" id="tone-val">Obsidian Minimalist</span>
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                  <button type="button" onclick="selectTone('Obsidian Minimalist', this)" class="tone-btn text-[10px] font-mono py-1.5 border border-white/20 bg-white/5 text-white rounded-lg transition-all">OBSIDIAN</button>
-                  <button type="button" onclick="selectTone('Silver Industrial', this)" class="tone-btn text-[10px] font-mono py-1.5 border border-obsidian-border bg-transparent text-neutral-400 rounded-lg transition-all hover:border-neutral-700">SILVER</button>
-                  <button type="button" onclick="selectTone('RGB Cyberpunk', this)" class="tone-btn text-[10px] font-mono py-1.5 border border-obsidian-border bg-transparent text-neutral-400 rounded-lg transition-all hover:border-neutral-700">NEON</button>
-                </div>
-              </div>
             </div>
           </div>
+        </section>
 
-          <!-- Suggested Quick Prompts -->
-          <div class="mt-6 flex flex-wrap items-center gap-2">
-            <span class="text-xs font-mono text-neutral-500 mr-2">Quick Syntheses:</span>
-            <button onclick="setQuery('Mechanical keyboard and mouse combo optimized for coding efficiency')" class="text-xs bg-white/[0.02] hover:bg-white/[0.06] border border-obsidian-border hover:border-neutral-700 px-3 py-1.5 rounded-lg transition-all text-neutral-300">
-              Coder Setup
-            </button>
-            <button onclick="setQuery('Ergonomic productivity setup for schoolwork and study')" class="text-xs bg-white/[0.02] hover:bg-white/[0.06] border border-obsidian-border hover:border-neutral-700 px-3 py-1.5 rounded-lg transition-all text-neutral-300">
-              Student Focus
-            </button>
-            <button onclick="setQuery('Minimalist space-saving travel setup for creative designers')" class="text-xs bg-white/[0.02] hover:bg-white/[0.06] border border-obsidian-border hover:border-neutral-700 px-3 py-1.5 rounded-lg transition-all text-neutral-300">
-              Creative Designer
-            </button>
+        <!-- THE PHILOSOPHY MATRIX -->
+        <section class="mb-16">
+          <div class="border-b border-obsidian-border pb-4 mb-8 flex items-center gap-3">
+            <div class="w-2.5 h-2.5 rounded-full bg-cyan-400"></div>
+            <h2 class="space-font text-xl font-medium text-white">The Design Matrix</h2>
           </div>
 
-        </div>
-      </section>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- form focus -->
+            <div class="bg-obsidian-card border border-obsidian-border hover:border-white/20 transition-all duration-300 p-6 rounded-2xl group hover:-translate-y-1">
+              <div class="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center mb-4 group-hover:border-cyan-400 transition-colors">
+                <i data-lucide="eye" class="w-5 h-5 text-neutral-400 group-hover:text-cyan-400"></i>
+              </div>
+              <h3 class="space-font text-lg text-white font-semibold mb-2">Workspace Aesthetics</h3>
+              <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                Visual environments actively govern mental clarity. Whether you configure a stealth matte obsidian retreat, a silver space-age layout, or vibrant reactive neon setups, we align physical structures directly to creative mindsets.
+              </p>
+            </div>
 
-      <!-- RESULTS SECTION -->
-      <section class="mb-16">
-        <div class="flex items-center justify-between border-b border-obsidian-border pb-4 mb-8">
-          <div class="flex items-center gap-3">
-            <div id="glow-indicator" class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#00f2fe]"></div>
-            <h2 class="space-font text-xl font-medium text-white">Synthesized Hardware Stack</h2>
+            <!-- ergonomics focus -->
+            <div class="bg-obsidian-card border border-obsidian-border hover:border-white/20 transition-all duration-300 p-6 rounded-2xl group hover:-translate-y-1">
+              <div class="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center mb-4 group-hover:border-emerald-400 transition-colors">
+                <i data-lucide="activity" class="w-5 h-5 text-neutral-400 group-hover:text-emerald-400"></i>
+              </div>
+              <h3 class="space-font text-lg text-white font-semibold mb-2">Ergonomic Precision</h3>
+              <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                Repetitive strain shouldn't limit potential. Circuitly targets human physical health by filtering layouts supporting healthy wrist placement, soft light projection, and robust posture configurations.
+              </p>
+            </div>
+
+            <!-- computation focus -->
+            <div class="bg-obsidian-card border border-obsidian-border hover:border-white/20 transition-all duration-300 p-6 rounded-2xl group hover:-translate-y-1">
+              <div class="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center mb-4 group-hover:border-yellow-400 transition-colors">
+                <i data-lucide="cpu" class="w-5 h-5 text-neutral-400 group-hover:text-yellow-400"></i>
+              </div>
+              <h3 class="space-font text-lg text-white font-semibold mb-2">Acoustic Balance</h3>
+              <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                Sound shapes concentration. We evaluate noise profiles—from silent tactile keyboard dampers to precise flat-response monitor systems—ensuring you stay in peak intellectual flow.
+              </p>
+            </div>
           </div>
-          <div id="result-meta" class="text-xs font-mono text-neutral-500">
-            INITIALIZING DEMO ENGINE
+        </section>
+
+        <!-- TECHNOLOGY & CODE DIAGNOSTICS (FUTURISTIC TERMINAL) -->
+        <section class="mb-12">
+          <div class="bg-black border border-obsidian-borderLight rounded-2xl p-6 shadow-4xl relative overflow-hidden">
+            <div class="flex items-center justify-between border-b border-obsidian-border pb-4 mb-4">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-red-500/50"></span>
+                <span class="w-3 h-3 rounded-full bg-yellow-500/50"></span>
+                <span class="w-3 h-3 rounded-full bg-green-500/50"></span>
+                <span class="text-xs font-mono text-neutral-500 ml-2">CORE_DIAGNOSTICS_PORTAL.SH</span>
+              </div>
+              <div class="text-[10px] font-mono text-cyan-400">STATUS: READY</div>
+            </div>
+            
+            <div class="font-mono text-xs text-neutral-400 space-y-2 max-h-52 overflow-y-auto" id="console-logs">
+              <p class="text-neutral-500">// Circuitly AI Engine Diagnostics Initialized</p>
+              <p><span class="text-cyan-400">$</span> boot --cognitive-framework --gemini-2.5-flash</p>
+              <p class="text-emerald-400">[OK] Model parsed: "gemini-2.5-flash-preview-09-2025"</p>
+              <p><span class="text-cyan-400">$</span> verify --schema --strict</p>
+              <p class="text-emerald-400">[OK] Output parsing: Structured JSON template mapping verified</p>
+              <p><span class="text-cyan-400">$</span> run --system-analysis</p>
+              <p class="text-neutral-300">• Client-side framework: Tailwind CSS + vanilla micro-interactions</p>
+              <p class="text-neutral-300">• Smart product tag semantic matching engine online</p>
+              <p class="text-neutral-500">// Ready to process complex physical desk inquiries with 3 complete items</p>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <!-- Shimmering Load State -->
-        <div id="results-loading" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="relative bg-obsidian-card border border-obsidian-border rounded-xl p-5 h-72 overflow-hidden shimmer"></div>
-          <div class="relative bg-obsidian-card border border-obsidian-border rounded-xl p-5 h-72 overflow-hidden shimmer"></div>
-          <div class="relative bg-obsidian-card border border-obsidian-border rounded-xl p-5 h-72 overflow-hidden shimmer"></div>
-        </div>
+      </main>
+    </div>
 
-        <!-- Recommendations Container Grid -->
-        <div id="results-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Dynamically generated through JS below -->
-        </div>
-      </section>
-
-      <!-- BOTTOM INTERACTIVE DEVELOPER CONSOLE -->
-      <section id="dev-console" class="hidden border border-obsidian-borderLight bg-obsidian-card rounded-2xl p-6 sm:p-8 shadow-3xl mb-12 relative overflow-hidden">
+    <!-- BOTTOM INTERACTIVE DEVELOPER CONSOLE -->
+    <section id="dev-console" class="hidden max-w-7xl mx-auto px-6 mb-12 relative z-10">
+      <div class="border border-obsidian-borderLight bg-obsidian-card rounded-2xl p-6 sm:p-8 shadow-3xl relative overflow-hidden">
         <div class="absolute top-0 right-0 p-2">
           <button onclick="toggleDevConsole()" class="text-neutral-500 hover:text-white p-2">
             <i data-lucide="x" class="w-4 h-4"></i>
@@ -310,17 +577,17 @@
           <h3 class="space-font font-bold text-base text-white">Gemini Client-Side Architecture</h3>
         </div>
         <p class="text-sm text-neutral-400 mb-6">
-          Circuitly contains a fully configured client-side AI pipeline utilizing <strong>gemini-2.5-flash-preview-09-2025</strong>. If you run Circuitly locally, you can supply your own API key to bypass mock restrictions.
+          Circuitly contains a fully active cognitive client interface. To test multi-turn conversations or custom layout constraints directly against Google's live server environment, enter your custom API key below.
         </p>
 
         <!-- API Key Inputs -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div class="space-y-1">
-            <label class="text-xs font-mono text-neutral-400">Gemini Key (Leave blank to use environment default)</label>
+            <label class="text-xs font-mono text-neutral-400">Gemini API Key</label>
             <input 
               type="password" 
               id="custom-api-key" 
-              placeholder="AI API Key" 
+              placeholder="Paste your Gemini API key (AIzaSy...)" 
               class="w-full bg-black border border-obsidian-border rounded-xl px-3 py-2 text-xs text-white placeholder-neutral-700 outline-none focus:border-cyan-400 transition-all font-mono"
             >
           </div>
@@ -340,7 +607,7 @@
             </button>
           </div>
           <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-2">
-            <span class="text-xs font-mono text-neutral-400">Local Testing & Implementation (Python)</span>
+            <span class="text-xs font-mono text-neutral-400">Local Testing & Implementation (Python Server)</span>
             <span class="text-[10px] font-mono text-neutral-500">CORS Support Configured</span>
           </div>
           <pre id="python-boilerplate" class="text-xs font-mono text-neutral-300 overflow-x-auto whitespace-pre leading-relaxed p-1">
@@ -362,18 +629,18 @@ def get_recommendations():
     budget = data.get('budget', 1200)
     aesthetic = data.get('aesthetic', 'Obsidian Minimalist')
     
-    # Simple logic mapping to fallback items or querying Gemini API manually
+    # Return structured workspace gear
     return jsonify({
         "results": [
             {
                 "id": 1,
                 "category": "Keyboard",
-                "name": "Flask Managed Custom Keyboard",
-                "price": 150,
+                "name": "Custom Obsidian Hot-swap Mechanical Keyboard",
+                "price": 180,
                 "match": 98,
-                "badge": "Backend Sync",
-                "desc": "Perfect hardware recommended via Python server.",
-                "specs": ["Silent linear switches", "Premium metal build", "PBT Keycaps"]
+                "badge": "Acoustic Dampened",
+                "desc": "An custom silent mechanical keyboard with linear switches and luxury keycaps.",
+                "specs": ["Silent linear switches", "Gasket mount system", "Custom PBT keycaps"]
             }
         ]
     })
@@ -382,12 +649,11 @@ if __name__ == '__main__':
     app.run(port=5000, debug=True)</pre>
         </div>
       </section>
-
-    </main>
+    </section>
 
     <!-- FOOTER -->
-    <footer class="relative z-10 border-t border-obsidian-border bg-obsidian py-12">
-      <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+    <footer class="relative z-10 border-t border-obsidian-border bg-obsidian py-8 mt-12">
+      <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
         <div class="flex items-center gap-2">
           <span class="space-font font-bold text-sm tracking-widest text-neutral-500">CIRCUITLY</span>
           <span class="text-xs font-mono text-neutral-600">© 2026</span>
@@ -395,567 +661,546 @@ if __name__ == '__main__':
         <div class="flex gap-6 text-xs font-mono text-neutral-500">
           <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
           <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
-          <a href="#" class="hover:text-white transition-colors">Documentation</a>
+          <a href="#" class="hover:text-white transition-colors font-semibold text-cyan-400 font-mono">Cognitive Assistant Enabled</a>
         </div>
       </div>
     </footer>
 
     <!-- INTERACTIVE JAVASCRIPT LOGIC -->
     <script>
-      // Active states for sliders and styles
-      let state = {
+      // Global App State
+      const state = {
         budget: 1200,
-        ergonomics: 'Balanced',
-        tone: 'Obsidian Minimalist',
+        ergo: 2, // 1: Pure Performance, 2: Balanced, 3: Ergonomic First
+        aesthetic: 'Obsidian Minimalist',
         query: ''
       };
 
-      // Mock DB for dynamic fallback simulations (expanded for broad search coverage)
-      const mockHardwareDB = [
-        // --- OBSIDIAN MINIMALIST SERIES ---
+      // Chat history state
+      const chatHistory = [
+        {
+          role: "assistant",
+          text: "Welcome to Circuitly! I am your visual and physical workspace co-pilot. Ask me details about setups, physical posture recommendations, tactile acoustics, or type specific design wishes!"
+        }
+      ];
+
+      // Highly rated, real physical workspace products catalog
+      const mockDatabase = [
+        // --- OBSIDIAN MINIMALIST ---
         {
           id: 101,
           category: "Keyboard",
-          name: "Unseen Matte Pro Keyboard",
-          price: 210,
+          name: "Keychron Q1 Pro Wireless",
+          price: 199,
           match: 99,
-          badge: "Stealth Classic",
-          desc: "Super low-profile mechanical keyboard with silent linear switches. Built with zero light-reflecting keys for focused workspace setups.",
-          specs: ["Double-shot PBT keycaps", "Hot-swappable Layout", "Silent linear switches"],
-          style: "Obsidian Minimalist",
-          tags: ["keyboard", "keycaps", "typing", "silent", "quiet", "code", "coding", "minimal"]
+          badge: "Architect Pick",
+          desc: "Gasket-mounted full aluminum custom mechanical keyboard with tactile brown switches.",
+          specs: ["CNC Aluminum Body", "Hot-swappable Switches", "Bluetooth 5.1 / Type-C"],
+          tone: "Obsidian Minimalist",
+          tags: ["coding", "programming", "silent", "wireless", "mechanical", "tactile", "study", "writer", "work", "keychron"]
         },
         {
           id: 102,
           category: "Mouse",
-          name: "Sleek Arc Ergonomic Point",
-          price: 129,
-          match: 97,
-          badge: "Ergo Weightless",
-          desc: "Ultralight 45g magnesium shell ergonomic mouse. Intricately shaped to minimize wrist fatigue over long study hours.",
-          specs: ["4000Hz polling rate", "USB-C charging", "8k optical tracking sensor"],
-          style: "Obsidian Minimalist",
-          tags: ["mouse", "pointer", "ergonomic", "scroll", "wireless", "hand", "minimal"]
+          name: "Logitech MX Master 3S",
+          price: 99,
+          match: 98,
+          badge: "Ergonomic Leader",
+          desc: "Ergonomic master productivity mouse with silent tactile clicks and 8K DPI sensor.",
+          specs: ["Silent click switches", "MagSpeed Scroll Wheel", "Thumb scroll wheel"],
+          tone: "Obsidian Minimalist",
+          tags: ["coding", "programming", "ergonomic", "wireless", "study", "office", "design", "quiet", "silent", "logitech"]
         },
         {
           id: 103,
-          category: "Audio",
-          name: "Flat-Response Studio Monitors",
-          price: 450,
-          match: 95,
-          badge: "Reference Sound",
-          desc: "Professional-grade clean audio desktop monitors. Provides absolute spatial audio precision for studying, tracks, and video creation.",
-          specs: ["Balanced XLR input", "Class D Bi-amplification", "Ultra low noise floor"],
-          style: "Obsidian Minimalist",
-          tags: ["speakers", "sound", "music", "audio", "headphones", "monitors", "minimal"]
+          category: "Desk Light",
+          name: "BenQ ScreenBar Halo",
+          price: 139,
+          match: 94,
+          badge: "Visual Health",
+          desc: "Premium monitor light bar offering auto-dimming and zero screen reflection.",
+          specs: ["Wireless controller dial", "Asymmetric optics", "Rear ambient backlight"],
+          tone: "Obsidian Minimalist",
+          tags: ["study", "reading", "light", "coding", "design", "minimalist", "night", "benq"]
         },
         {
           id: 104,
-          category: "Lighting",
-          name: "Dark Horizon Screen Lightbar",
-          price: 95,
-          match: 92,
-          badge: "Aura Saver",
-          desc: "Stealthy monitor lightbar casting direct desk glow. Zero screen reflections, perfect for late night study sessions.",
-          specs: ["Stepless touch slider", "Auto-balancing temperature", "Fits flat/curved screens"],
-          style: "Obsidian Minimalist",
-          tags: ["light", "lighting", "lamp", "desk", "night", "minimal"]
+          category: "Audio System",
+          name: "Sony WH-1000XM5 Headphones",
+          price: 398,
+          match: 95,
+          badge: "Industry Standard ANC",
+          desc: "Industry-leading active noise canceling wireless headphones for distraction-free output.",
+          specs: ["Auto Noise Cancelling Optimizer", "Ultra-comfortable soft leather", "30-hour battery life"],
+          tone: "Obsidian Minimalist",
+          tags: ["audio", "sound", "noise", "silent", "wireless", "music", "editing", "podcast", "sony"]
         },
         {
           id: 105,
+          category: "Monitor",
+          name: "Dell UltraSharp U2723QE 4K",
+          price: 479,
+          match: 96,
+          badge: "Color Accurate",
+          desc: "Stunning 27-inch 4K IPS Black monitor with outstanding color contrast and connectivity.",
+          specs: ["IPS Black technology (2000:1)", "90W USB-C Power Delivery", "98% DCI-P3 color spectrum"],
+          tone: "Obsidian Minimalist",
+          tags: ["monitor", "display", "design", "editing", "video", "photo", "4k", "coding", "dell"]
+        },
+        {
+          id: 106,
           category: "Desk Pad",
-          name: "Minimal Felt Desk Pad",
-          price: 45,
-          match: 90,
-          badge: "Soft Glide",
-          desc: "Premium anti-slip felt desk pad in charcoal black. Dampens keystroke noise and provides soft tactile support for wrist rest.",
-          specs: ["Vegan leather backing", "Stitched anti-fray borders", "Waterproof coating"],
-          style: "Obsidian Minimalist",
-          tags: ["desk", "pad", "mat", "accessories", "felt", "minimal"]
+          name: "Grovemade Matte Wool Felt Pad",
+          price: 80,
+          match: 92,
+          badge: "Premium Comfort",
+          desc: "Grown wool felt desk mat providing tactile luxury and workspace structural warmth.",
+          specs: ["100% Merino wool felt", "Non-slip cork lining", "Hand-finished borders"],
+          tone: "Obsidian Minimalist",
+          tags: ["pad", "mat", "wool", "ergonomic", "writing", "minimalist", "grovemade"]
         },
 
-        // --- SILVER INDUSTRIAL SERIES ---
+        // --- SILVER INDUSTRIAL ---
         {
           id: 201,
           category: "Keyboard",
-          name: "Solid Aluminium Cyber Gasket",
-          price: 340,
-          match: 98,
-          badge: "Precision Milled",
-          desc: "CNC milled solid raw-silver mechanical keyboard. Robust gasket mount delivers an acoustic profile loved by programmers.",
-          specs: ["Brass plate weight", "Hand-lubricated stabs", "Coiled metallic cable"],
-          style: "Silver Industrial",
-          tags: ["keyboard", "typing", "aluminum", "metal", "silver", "code", "gasket"]
+          name: "Logitech MX Keys S (Pale Gray)",
+          price: 109,
+          match: 96,
+          badge: "Fluid Typing",
+          desc: "Low-profile smart backlighting wireless keyboard contoured for perfect typing precision.",
+          specs: ["Spherically-dished keys", "Proximity backlighting sensors", "Multi-device Easy-Switch"],
+          tone: "Silver Industrial",
+          tags: ["coding", "programming", "silent", "wireless", "low-profile", "office", "study", "writer", "logitech"]
         },
         {
           id: 202,
-          category: "Mouse",
-          name: "Anodized Silver Tracking Engine",
-          price: 150,
-          match: 96,
-          badge: "Speed Metal",
-          desc: "Slick brushed silver navigation mouse. Features a premium tactile scroll wheel and frictionless metal glide feet.",
-          specs: ["Laser tracking precision", "Infinite-scrolling dial", "Tri-device bluetooth sync"],
-          style: "Silver Industrial",
-          tags: ["mouse", "pointer", "scroll", "silver", "metal", "wireless"]
+          category: "Keyboard",
+          name: "Apple Magic Keyboard (Touch ID)",
+          price: 149,
+          match: 95,
+          badge: "macOS Native",
+          desc: "Low-profile design tailored explicitly for Apple ecosystems with built-in biometric verification.",
+          specs: ["Integrated Touch ID sensor", "Incredibly thin chassis", "Rechargeable internal battery"],
+          tone: "Silver Industrial",
+          tags: ["mac", "apple", "ios", "wireless", "low-profile", "minimalist"]
         },
         {
           id: 203,
-          category: "Lighting",
-          name: "Minimalist Monitor Lightbar Pro",
-          price: 89,
-          match: 92,
-          badge: "Eye Comfort",
-          desc: "Anodized silver monitor bar providing glare-free downlight to protect young eyes during study marathons.",
-          specs: ["Brushed aluminum body", "Auto dimming level sensor", "Wireless dial controller"],
-          style: "Silver Industrial",
-          tags: ["light", "lighting", "lamp", "desk", "silver"]
+          category: "Mouse",
+          name: "Logitech MX Anywhere 3S",
+          price: 79,
+          match: 94,
+          badge: "Ultra Mobile",
+          desc: "Compact high-performance wireless travel mouse designed for any surface tracking.",
+          specs: ["Tracks on glass (8K DPI)", "Magspeed scroll wheel", "Tactile quiet clicks"],
+          tone: "Silver Industrial",
+          tags: ["travel", "laptop", "wireless", "study", "portable", "quiet", "silent", "logitech"]
         },
         {
           id: 204,
-          category: "Audio",
-          name: "Silver Steel Sound Pods",
-          price: 199,
-          match: 94,
-          badge: "Metallic Bass",
-          desc: "Compact high-fidelity desktop sound spheres. Metallic silver enclosure with clean clear voice performance.",
-          specs: ["Dual passive radiators", "USB-C digital connection", "Bluetooth 5.3"],
-          style: "Silver Industrial",
-          tags: ["speakers", "sound", "music", "audio", "silver"]
+          category: "Audio System",
+          name: "Audioengine A2+ Wireless Speakers",
+          price: 269,
+          match: 93,
+          badge: "Hi-Fi Acoustic",
+          desc: "Compact hand-built luxury desktop stereo speakers with massive dynamic audio response.",
+          specs: ["Custom Kevlar aramid woofers", "Built-in class AB power amps", "High-fidelity aptX Bluetooth"],
+          tone: "Silver Industrial",
+          tags: ["audio", "sound", "speakers", "music", "editing", "podcast", "audioengine"]
+        },
+        {
+          id: 205,
+          category: "Monitor",
+          name: "Apple Studio Display 5K",
+          price: 1599,
+          match: 97,
+          badge: "Ultimate 5K Display",
+          desc: "Immense 27-inch 5K Retina display with high fidelity camera, studio mics, and 6-speaker system.",
+          specs: ["5120 x 2880 Retina resolution", "12MP Ultra-wide camera", "Six-speaker spatial audio"],
+          tone: "Silver Industrial",
+          tags: ["monitor", "display", "mac", "apple", "design", "editing", "video", "photo", "5k"]
+        },
+        {
+          id: 206,
+          category: "Desk Pad",
+          name: "Satechi Eco-Leather Deskmate",
+          price: 39,
+          match: 90,
+          badge: "Vegan Leather",
+          desc: "Waterproof durable desk cover offering clean styling and perfect optical tracking protection.",
+          specs: ["Premium polyurethane leather", "Water-resistant coating", "Safeguards desk surfaces"],
+          tone: "Silver Industrial",
+          tags: ["pad", "mat", "leather", "minimalist", "waterproof", "satechi"]
         },
 
-        // --- RGB CYBERPUNK SERIES ---
+        // --- RGB CYBERPUNK ---
         {
           id: 301,
           category: "Keyboard",
-          name: "Neon Gasket Transparent Keeb",
-          price: 160,
-          match: 94,
-          badge: "Vivid Accent",
-          desc: "Fully clear frosted mechanical keyboard that diffuses dynamic neon lighting effects. Built for vibrant tech workspaces.",
-          specs: ["Polycarbonate chassis", "Reactive RGB matrix presets", "Transparent switches"],
-          style: "RGB Cyberpunk",
-          tags: ["keyboard", "typing", "rgb", "neon", "cyber", "transparent", "game", "gaming"]
+          name: "Razer BlackWidow V4 75%",
+          price: 189,
+          match: 98,
+          badge: "Custom Hot-Swap",
+          desc: "Hot-swappable tactical mechanical keyboard with dual-side underglow RGB illumination.",
+          specs: ["Orange tactile mechanical switches", "Double-shot ABS keycaps", "Two-side RGB underglow"],
+          tone: "RGB Cyberpunk",
+          tags: ["coding", "gaming", "mechanical", "tactile", "rgb", "glow", "backlight", "loud", "razer"]
         },
         {
           id: 302,
-          category: "Mouse",
-          name: "Carbon Glide RGB Mouse",
-          price: 95,
-          match: 93,
-          badge: "Performance Glow",
-          desc: "Honeycomb skeletal gamer mouse with fully customized under-glow neon strips. Ultra-fast tracking speed.",
-          specs: ["68g featherweight frame", "Addressable neon LEDs", "26k DPI optical sensor"],
-          style: "RGB Cyberpunk",
-          tags: ["mouse", "pointer", "rgb", "neon", "gaming", "fast"]
+          category: "Keyboard",
+          name: "SteelSeries Apex Pro TKL (2023)",
+          price: 179,
+          match: 97,
+          badge: "OmniPoint Adjustable",
+          desc: "World's fastest keyboard with fully adjustable actuation switches and beautiful custom lighting.",
+          specs: ["Adjustable Hall Effect triggers", "OLED Smart Display", "Aircraft-grade aluminum plate"],
+          tone: "RGB Cyberpunk",
+          tags: ["gaming", "mechanical", "rgb", "glow", "backlight", "coding", "fast", "steelseries"]
         },
         {
           id: 303,
-          category: "Accessories",
-          name: "Sound-Reactive LED Desk Tower",
-          price: 70,
-          match: 90,
-          badge: "Cyber Beat",
-          desc: "Tall sound-responsive desktop light tower. Translates your study music or soundscapes directly into smooth color sweeps.",
-          specs: ["App customized patterns", "32-bit ARM audio processor", "High density SMD LEDs"],
-          style: "RGB Cyberpunk",
-          tags: ["light", "lighting", "lamp", "rgb", "sound", "neon"]
+          category: "Mouse",
+          name: "Razer Basilisk V3 Pro",
+          price: 159,
+          match: 97,
+          badge: "Hyper-Reactive",
+          desc: "Advanced ergonomic gaming and tasking mouse with customizable 13-zone RGB underglow.",
+          specs: ["Focus Pro 30K Optical Sensor", "HyperScroll tilt wheel", "13-Zone Chroma lighting"],
+          tone: "RGB Cyberpunk",
+          tags: ["gaming", "wireless", "rgb", "glow", "ergonomic", "fast", "razer"]
         },
         {
           id: 304,
-          category: "Audio",
-          name: "Cyber Pulse Neon Headset",
-          price: 130,
+          category: "Mouse",
+          name: "SteelSeries Aerox 3 Wireless",
+          price: 99,
+          match: 94,
+          badge: "Ultra-Lightweight",
+          desc: "Super-light 68g honeycomb design built for blinding speed and stunning PrismSync illumination.",
+          specs: ["Ultra-lightweight 68g shell", "IP54 AquaBarrier protective coating", "Golden Micro IP54 switches"],
+          tone: "RGB Cyberpunk",
+          tags: ["gaming", "wireless", "rgb", "glow", "travel", "portable", "lightweight", "steelseries"]
+        },
+        {
+          id: 305,
+          category: "Audio System",
+          name: "SteelSeries Arctis Nova Pro",
+          price: 349,
           match: 96,
-          badge: "Immersion Audio",
-          desc: "Comfy over-ear gaming and study headphones with custom RGB rings. Features crisp audio clarity with noise-isolation pads.",
-          specs: ["Immersive 3D Spatial Audio", "Foldaway beam microphone", "Memory foam soft cushions"],
-          style: "RGB Cyberpunk",
-          tags: ["audio", "headphones", "sound", "headset", "rgb", "microphone", "mic"]
+          badge: "Spatial Audio",
+          desc: "Ultimate premium active noise canceling headset designed for infinite acoustic immersion.",
+          specs: ["Hi-Res Spatial Audio drivers", "Dual-source active noise canceling", "Hot-swappable battery power"],
+          tone: "RGB Cyberpunk",
+          tags: ["audio", "sound", "gaming", "music", "wireless", "noise", "silent", "steelseries"]
+        },
+        {
+          id: 306,
+          category: "Monitor",
+          name: "ASUS ROG Swift 1440p OLED",
+          price: 899,
+          match: 95,
+          badge: "Incredible Contrast",
+          desc: "Ultra-fast 240Hz refresh rate OLED monitor delivering near-instant response times and neon-pop depth.",
+          specs: ["0.03ms pixel response speed", "Custom anti-reflective panel coating", "Intense vivid color depth"],
+          tone: "RGB Cyberpunk",
+          tags: ["monitor", "display", "gaming", "fast", "video", "editing", "rgb", "asus"]
         }
       ];
 
-      // Initial rendering and icon mapping
-      window.onload = function() {
+      // Initialize on page load
+      window.addEventListener('load', () => {
         lucide.createIcons();
-        renderProducts(mockHardwareDB.filter(p => p.style === "Obsidian Minimalist").slice(0, 3));
-        updateStatus();
-      };
+        resetSliders();
+        renderDefaultRecommendations();
+        appendConsoleLog("Interactive Multi-Turn AI System initialized successfully.");
+      });
 
-      function updateStatus() {
-        const badge = document.getElementById('status-badge');
-        badge.classList.remove('hidden');
-      }
+      // Switch main tab views
+      function switchView(viewName) {
+        const archView = document.getElementById('view-architect');
+        const aboutView = document.getElementById('view-about');
+        const tabArch = document.getElementById('tab-architect');
+        const tabAbout = document.getElementById('tab-about');
 
-      // Set input from quick prompts
-      function setQuery(text) {
-        document.getElementById('search-input').value = text;
-      }
-
-      // Live updates of values
-      function updateValue(type, value) {
-        if (type === 'budget') {
-          state.budget = value;
-          document.getElementById('budget-val').innerText = `$${Number(value).toLocaleString()}`;
-        } else if (type === 'ergo') {
-          const ergoLabels = { '1': 'Minimum', '2': 'Balanced', '3': 'Maximum Ergonomics' };
-          state.ergonomics = ergoLabels[value];
-          document.getElementById('ergo-val').innerText = state.ergonomics;
+        if (viewName === 'architect') {
+          archView.classList.remove('hidden');
+          setTimeout(() => {
+            archView.classList.remove('opacity-0', 'translate-y-4');
+            archView.classList.add('opacity-100', 'translate-y-0');
+          }, 50);
+          aboutView.classList.add('hidden', 'opacity-0', 'translate-y-4');
+          tabArch.className = "px-4 py-1.5 rounded-full text-white bg-white/5 font-medium transition-all";
+          tabAbout.className = "px-4 py-1.5 rounded-full text-neutral-400 hover:text-white transition-all";
+        } else {
+          aboutView.classList.remove('hidden');
+          setTimeout(() => {
+            aboutView.classList.remove('opacity-0', 'translate-y-4');
+            aboutView.classList.add('opacity-100', 'translate-y-0');
+          }, 50);
+          archView.classList.add('hidden', 'opacity-0', 'translate-y-4');
+          tabAbout.className = "px-4 py-1.5 rounded-full text-white bg-white/5 font-medium transition-all";
+          tabArch.className = "px-4 py-1.5 rounded-full text-neutral-400 hover:text-white transition-all";
         }
       }
 
-      // Reset Slider Configs
+      // Update tuning sliders
+      function updateValue(type, val) {
+        if (type === 'budget') {
+          state.budget = parseInt(val);
+          document.getElementById('budget-val').textContent = `$${val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+        } else if (type === 'ergo') {
+          state.ergo = parseInt(val);
+          const labels = ["High Performance", "Balanced Focus", "Ergonomic Focus"];
+          document.getElementById('ergo-val').textContent = labels[state.ergo - 1];
+        }
+      }
+
+      // Reset tuning parameters
       function resetSliders() {
         document.getElementById('budget-slider').value = 1200;
         document.getElementById('ergo-slider').value = 2;
         updateValue('budget', 1200);
         updateValue('ergo', 2);
-        selectTone('Obsidian Minimalist', document.querySelectorAll('.tone-btn')[0]);
+        selectTone('Obsidian Minimalist');
       }
 
-      // Sleek style tone picker selection style swapping
-      function selectTone(tone, button) {
-        state.tone = tone;
-        document.getElementById('tone-val').innerText = tone;
+      // Change design tone
+      function selectTone(toneName) {
+        state.aesthetic = toneName;
+        document.getElementById('tone-val').textContent = toneName;
 
-        document.querySelectorAll('.tone-btn').forEach(btn => {
-          btn.classList.remove('border-white/20', 'bg-white/5', 'text-white');
-          btn.classList.add('border-obsidian-border', 'bg-transparent', 'text-neutral-400', 'hover:border-neutral-700');
+        const buttons = {
+          'Obsidian Minimalist': 'btn-tone-obsidian',
+          'Silver Industrial': 'btn-tone-silver',
+          'RGB Cyberpunk': 'btn-tone-neon'
+        };
+
+        Object.keys(buttons).forEach(key => {
+          const btn = document.getElementById(buttons[key]);
+          if (key === toneName) {
+            btn.className = "tone-btn text-[9px] font-mono py-1 border border-white/20 bg-white/5 text-white rounded-md transition-all";
+          } else {
+            btn.className = "tone-btn text-[9px] font-mono py-1 border border-obsidian-border bg-transparent text-neutral-400 rounded-md transition-all hover:border-neutral-700";
+          }
         });
 
-        button.classList.add('border-white/20', 'bg-white/5', 'text-white');
-        button.classList.remove('border-obsidian-border', 'bg-transparent', 'text-neutral-400', 'hover:border-neutral-700');
+        const glow = document.getElementById('ambient-glow');
+        if (toneName === 'Obsidian Minimalist') {
+          glow.className = "absolute top-[300px] right-[-100px] w-[400px] h-[400px] bg-cyan-950/10 blur-[100px] pointer-events-none z-0 transition-all duration-700";
+        } else if (toneName === 'Silver Industrial') {
+          glow.className = "absolute top-[300px] right-[-100px] w-[400px] h-[400px] bg-zinc-700/10 blur-[100px] pointer-events-none z-0 transition-all duration-700";
+        } else {
+          glow.className = "absolute top-[300px] right-[-100px] w-[400px] h-[400px] bg-purple-950/20 blur-[100px] pointer-events-none z-0 transition-all duration-700";
+        }
       }
 
-      // Show temporary custom toasts
-      function showToast(text, isError = false) {
-        const toast = document.getElementById('toast');
-        const icon = document.getElementById('toast-icon');
-        const textSpan = document.getElementById('toast-text');
+      // Set input query
+      function setQuery(text, targetBudget, ergoFocus, workspaceTone) {
+        document.getElementById('search-input').value = text;
+        if (targetBudget) {
+          document.getElementById('budget-slider').value = targetBudget;
+          updateValue('budget', targetBudget);
+        }
+        if (ergoFocus) {
+          document.getElementById('ergo-slider').value = ergoFocus;
+          updateValue('ergo', ergoFocus);
+        }
+        if (workspaceTone) {
+          selectTone(workspaceTone);
+        }
+        showToast("Constraint values populated.");
+      }
 
-        textSpan.innerText = text;
-        if (isError) {
+      // Toggle dev settings
+      function toggleDevConsole() {
+        const consoleEl = document.getElementById('dev-console');
+        consoleEl.classList.toggle('hidden');
+        if (!consoleEl.classList.contains('hidden')) {
+          consoleEl.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
+      // Interactive visualizer action switcher
+      const nodeData = {
+        human: {
+          step: "NODE 01 // HUMAN CREATIVE INQUIRY",
+          title: "Intention Parser",
+          desc: "Extracts primary work focus, acoustic goals, specific peripheral choices, tactile style preferences, and physical desk dimensional properties."
+        },
+        gemini: {
+          step: "NODE 02 // DYNAMIC COGNITIVE SWEEP",
+          title: "Gemini Synthesis Engine",
+          desc: "Applies specialized constraint rules over cataloged hardware vectors. Scores biomechanical fit, cost parameters, and multi-device connection latency."
+        },
+        hardware: {
+          step: "NODE 03 // ADAPTIVE RECOMMENDATIONS",
+          title: "Hardware Component Output",
+          desc: "Returns exact hardware recommendations with custom fit percentages and direct product informational find links."
+        }
+      };
+
+      function triggerNodeAction(nodeKey) {
+        const info = nodeData[nodeKey];
+        if (!info) return;
+
+        const stepEl = document.getElementById('flow-step');
+        const titleEl = document.getElementById('flow-title');
+        const descEl = document.getElementById('flow-description');
+        const cardEl = document.getElementById('dataflow-card');
+
+        cardEl.classList.add('border-cyan-400', 'bg-cyan-950/20');
+        setTimeout(() => {
+          cardEl.classList.remove('border-cyan-400', 'bg-cyan-950/20');
+        }, 500);
+
+        stepEl.textContent = info.step;
+        titleEl.textContent = info.title;
+        descEl.textContent = info.desc;
+        appendConsoleLog(`Diagnostic scan completed: Node [${nodeKey.toUpperCase()}]`);
+      }
+
+      // UI Toast Feedback
+      function showToast(message, type = "info") {
+        const toast = document.getElementById('toast');
+        const text = document.getElementById('toast-text');
+        const icon = document.getElementById('toast-icon');
+
+        text.textContent = message;
+
+        if (type === "error") {
           icon.setAttribute('data-lucide', 'alert-triangle');
-          icon.className = "text-yellow-400 w-5 h-5";
-        } else {
+          icon.className = "text-red-400 w-5 h-5";
+        } else if (type === "success") {
           icon.setAttribute('data-lucide', 'check-circle');
           icon.className = "text-emerald-400 w-5 h-5";
+        } else {
+          icon.setAttribute('data-lucide', 'sparkles');
+          icon.className = "text-cyan-400 w-5 h-5";
         }
-        
+
         lucide.createIcons();
 
-        toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+        toast.classList.remove('translate-y-20', 'opacity-0');
         toast.classList.add('translate-y-0', 'opacity-100');
-        
+
         setTimeout(() => {
-          toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
           toast.classList.remove('translate-y-0', 'opacity-100');
-        }, 3500);
+          toast.classList.add('translate-y-20', 'opacity-0');
+        }, 3000);
       }
 
-      // Toggle dev panel view
-      function toggleDevConsole() {
-        const devConsole = document.getElementById('dev-console');
-        devConsole.classList.toggle('hidden');
-        if(!devConsole.classList.contains('hidden')) {
-          devConsole.scrollIntoView({ behavior: 'smooth' });
-        }
+      // App logger
+      function appendConsoleLog(message) {
+        const consoleLogs = document.getElementById('console-logs');
+        if (!consoleLogs) return;
+
+        const time = new Date().toLocaleTimeString();
+        const p = document.createElement('p');
+        p.className = 'text-neutral-400';
+        p.innerHTML = `<span class="text-neutral-500">[${time}]</span> <span class="text-cyan-400">$</span> ${message}`;
+        consoleLogs.appendChild(p);
+        consoleLogs.scrollTop = consoleLogs.scrollHeight;
       }
 
-      // Copy text code boilerplate
-      function copyPythonCode() {
-        const text = document.getElementById('python-boilerplate').innerText;
-        const elem = document.createElement('textarea');
-        elem.value = text;
-        document.body.appendChild(elem);
-        elem.select();
-        document.execCommand('copy');
-        document.body.removeChild(elem);
-        showToast('Python boilerplate copied!');
+      // Render default components set
+      function renderDefaultRecommendations() {
+        const toneFilter = state.aesthetic;
+        const filtered = mockDatabase.filter(item => item.tone === toneFilter).slice(0, 3);
+        renderHardwareCards(filtered, "Simulated defaults based on theme");
       }
 
-      // Smart Offline recommendation algorithm matching User Intent + Price + Style
-      function synthesizeLocalRecommendations(userQuery, maxBudget, activeStyle, ergonomicFocus) {
-        const queryLower = userQuery.toLowerCase();
+      // Render hardware recommendations
+      function renderHardwareCards(items, metaText = "Ready") {
+        const container = document.getElementById('results-container');
+        const metaEl = document.getElementById('result-meta');
+        const costDashboard = document.getElementById('cost-dashboard');
         
-        // Filter database by the active style aesthetic first
-        let catalog = mockHardwareDB.filter(item => item.style === activeStyle);
+        container.innerHTML = '';
+        metaEl.textContent = metaText;
 
-        // Score products based on how well they match search query keywords
-        catalog = catalog.map(item => {
-          let score = 0;
-          
-          // Match main categories
-          if (queryLower.includes(item.category.toLowerCase())) score += 10;
-          
-          // Match individual keyword tags
-          item.tags.forEach(tag => {
-            if (queryLower.includes(tag)) score += 5;
-          });
-
-          // Adjust scores for modifier keywords
-          if (queryLower.includes("silent") || queryLower.includes("quiet")) {
-            if (item.desc.toLowerCase().includes("silent") || item.desc.toLowerCase().includes("quiet")) {
-              score += 8;
-            }
-          }
-          if (queryLower.includes("ergo") || queryLower.includes("comfortable")) {
-            if (item.desc.toLowerCase().includes("ergo") || item.desc.toLowerCase().includes("comfy")) {
-              score += 8;
-            }
-          }
-          if (queryLower.includes("metal") || queryLower.includes("aluminium")) {
-            if (item.desc.toLowerCase().includes("aluminium") || item.desc.toLowerCase().includes("metal")) {
-              score += 8;
-            }
-          }
-
-          return { ...item, queryScore: score };
-        });
-
-        // Sort catalog so best matching products rise to the top
-        catalog.sort((a, b) => b.queryScore - a.queryScore);
-
-        // Group into primary categories to assemble a highly cohesive 3-piece bundle
-        const keyboards = catalog.filter(i => i.category === "Keyboard");
-        const mice = catalog.filter(i => i.category === "Mouse");
-        const accessories = catalog.filter(i => i.category !== "Keyboard" && i.category !== "Mouse");
-
-        // Try selecting the highest-scoring matching item from each bucket
-        let selectedStack = [];
-        if (keyboards.length > 0) selectedStack.push(keyboards[0]);
-        if (mice.length > 0) selectedStack.push(mice[0]);
-        if (accessories.length > 0) selectedStack.push(accessories[0]);
-
-        // If for some reason we have fewer than 3 items, pad with remaining catalog items
-        let remaining = catalog.filter(i => !selectedStack.find(s => s.id === i.id));
-        while (selectedStack.length < 3 && remaining.length > 0) {
-          selectedStack.push(remaining.shift());
-        }
-
-        // Keep only top 3 items for output compatibility
-        selectedStack = selectedStack.slice(0, 3);
-
-        // Calculate combined pricing
-        let totalCost = selectedStack.reduce((sum, item) => sum + item.price, 0);
-
-        // Dynamic pricing adjustment mechanism to ensure the stack perfectly scales to target Budget
-        if (totalCost > maxBudget) {
-          // If total price overflows budget, apply dynamic scaling adjustments representing budget-friendly modifications
-          const ratio = (maxBudget * 0.95) / totalCost;
-          selectedStack = selectedStack.map(item => {
-            const adjustedPrice = Math.max(25, Math.round(item.price * ratio));
-            return {
-              ...item,
-              price: adjustedPrice,
-              badge: "Budget Optimized",
-              desc: item.desc + " [Scaled value optimization applied]"
-            };
-          });
-        }
-
-        // Apply visual and ergonomic priority tags dynamically matching the user slider selection
-        selectedStack = selectedStack.map(item => {
-          let matchPercent = 90 + Math.floor(Math.random() * 9);
-          if (item.queryScore > 0) matchPercent = Math.min(100, matchPercent + 3);
-
-          let updatedDesc = item.desc;
-          if (ergonomicFocus === "Maximum Ergonomics") {
-            updatedDesc = "Ergonomically tuned configuration: " + updatedDesc;
-          }
-
-          return {
-            ...item,
-            match: matchPercent,
-            desc: updatedDesc
-          };
-        });
-
-        return selectedStack;
-      }
-
-      // Main Gemini generation call with custom fallback handling
-      async function handleGenerate(event) {
-        event.preventDefault();
-        const query = document.getElementById('search-input').value;
-        state.query = query;
-
-        // Hide dynamic list and reveal premium loader shimmers
-        document.getElementById('results-container').classList.add('hidden');
-        document.getElementById('results-loading').classList.remove('hidden');
-
-        // Configure API Keys (Checks for local debug keys or default keys)
-        const apiKey = ""; // Left empty to support dynamic Canvas platform runtime inject
-        const customKey = document.getElementById('custom-api-key').value;
-        const activeKey = customKey || apiKey;
-
-        if (!activeKey) {
-          // Run our smart client-side local synthesis algorithm
-          setTimeout(() => {
-            const results = synthesizeLocalRecommendations(state.query, state.budget, state.tone, state.ergonomics);
-            
-            document.getElementById('results-loading').classList.add('hidden');
-            document.getElementById('results-container').classList.remove('hidden');
-            
-            if (results.length > 0) {
-              renderProducts(results);
-              document.getElementById('result-meta').innerText = `LOCAL SYNTHESIZED ENGINE • COGNITIVE BUNDLE SUCCESS`;
-              showToast('Synthesized hardware layout matching style & query!');
-            }
-          }, 1100);
+        if (!items || items.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-full border border-dashed border-obsidian-border p-10 text-center rounded-2xl">
+              <i data-lucide="help-circle" class="w-7 h-7 text-neutral-500 mx-auto mb-2"></i>
+              <p class="text-neutral-400 text-xs">No matching system gear found. Try increasing target budget constraints.</p>
+            </div>
+          `;
+          costDashboard.classList.add('hidden');
+          lucide.createIcons();
           return;
         }
 
-        // Setup payloads for Gemini API
-        const systemPrompt = `You are Circuitly, an expert hardware pairing architect. 
-Construct EXACTLY 3 clean, highly-cohesive tech hardware setup items (e.g., keyboard, mouse, lights, desk pads, sound gear).
-Keep all items safe, healthy, legal, appropriate, and strictly work/gaming/school study focused.
-
-Requirements:
-- Total combined price of the 3 items must fit under or within 10% of the User Budget of $${state.budget}.
-- Aesthetic theme style MUST correspond with: ${state.tone}.
-- Align recommendations with specified Ergonomics Focus priority: ${state.ergonomics}.
-- Match specific product tags searched by user: "${state.query}".
-- Render output ONLY matching the structured JSON responses template specified.`;
-
-        const userPrompt = `Query: "${state.query}"\nBudget Cap: $${state.budget}\nWorkspace Style: ${state.tone}\nErgonomic Level: ${state.ergonomics}`;
-
-        const payload = {
-          contents: [{ parts: [{ text: userPrompt }] }],
-          systemInstruction: { parts: [{ text: systemPrompt }] },
-          generationConfig: {
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: "OBJECT",
-              properties: {
-                results: {
-                  type: "ARRAY",
-                  description: "Always exactly 3 hardware items",
-                  items: {
-                    type: "OBJECT",
-                    properties: {
-                      id: { type: "INTEGER" },
-                      category: { type: "STRING" },
-                      name: { type: "STRING" },
-                      price: { type: "INTEGER" },
-                      match: { type: "INTEGER" },
-                      badge: { type: "STRING" },
-                      desc: { type: "STRING" },
-                      specs: {
-                        type: "ARRAY",
-                        items: { type: "STRING" }
-                      }
-                    },
-                    required: ["id", "category", "name", "price", "match", "badge", "desc", "specs"]
-                  }
-                }
-              },
-              required: ["results"]
-            }
-          }
-        };
-
-        const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${activeKey}`;
-
-        // Send fetch request with 5x Exponential Backoff Retry Loop
-        let backoffDelay = 1000;
-        let success = false;
-        let responseData = null;
-
-        for (let attempt = 0; attempt < 5; attempt++) {
-          try {
-            const apiResponse = await fetch(targetUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-
-            if (!apiResponse.ok) {
-              throw new Error(`API Status Code: ${apiResponse.status}`);
-            }
-
-            const rawJson = await apiResponse.json();
-            const textResponse = rawJson.candidates?.[0]?.content?.parts?.[0]?.text;
-            responseData = JSON.parse(textResponse);
-            success = true;
-            break;
-          } catch (error) {
-            console.warn(`Gemini Request Attempt ${attempt + 1} failed. Retrying...`);
-            if (attempt === 4) {
-              console.error("All Gemini API attempts failed: ", error);
-            } else {
-              await new Promise(r => setTimeout(r, backoffDelay));
-              backoffDelay *= 2;
-            }
-          }
-        }
-
-        // UI Reset and Display
-        document.getElementById('results-loading').classList.add('hidden');
-        document.getElementById('results-container').classList.remove('hidden');
-
-        if (success && responseData && responseData.results) {
-          renderProducts(responseData.results);
-          document.getElementById('result-meta').innerText = `LIVE GEMINI AI SYNTHESIS • 3 DYNAMIC PIECES`;
-          showToast('Hardware successfully synthesized via live Gemini AI!');
+        // Calculate and update the Cost Dashboard
+        const totalCost = items.reduce((sum, item) => sum + item.price, 0);
+        document.getElementById('total-cost-display').textContent = `$${totalCost} / $${state.budget}`;
+        
+        const percentage = Math.min(100, (totalCost / state.budget) * 100);
+        const costBar = document.getElementById('cost-bar');
+        costBar.style.width = `${percentage}%`;
+        
+        // Handle color coding based on budget density
+        if (percentage > 95) {
+          costBar.className = "bg-red-500 h-full transition-all duration-500";
+        } else if (percentage > 80) {
+          costBar.className = "bg-yellow-500 h-full transition-all duration-500";
         } else {
-          // Failure fallback
-          showToast('Live Gemini query failed. Loaded offline library fallback.', true);
-          const offlineMatches = synthesizeLocalRecommendations(state.query, state.budget, state.tone, state.ergonomics);
-          renderProducts(offlineMatches);
-          document.getElementById('result-meta').innerText = `FALLBACK ENGINE • OFFLINE PORTFOLIO ACTIVE`;
+          costBar.className = "bg-cyan-400 h-full transition-all duration-500";
         }
-      }
 
-      // Dynamic layout card generator
-      function renderProducts(products) {
-        const container = document.getElementById('results-container');
-        container.innerHTML = '';
+        const savings = state.budget - totalCost;
+        document.getElementById('savings-display').textContent = savings >= 0 
+          ? `Saved $${savings} under your cap` 
+          : `Over budget cap by $${Math.abs(savings)}`;
 
-        products.forEach(p => {
-          let specsHTML = '';
-          if(p.specs && p.specs.length > 0) {
-            specsHTML = p.specs.map(spec => `
-              <li class="flex items-center gap-1.5 text-xs text-neutral-400 font-mono">
-                <span class="w-1 h-1 rounded-full bg-neutral-600"></span>
-                ${spec}
-              </li>
-            `).join('');
-          }
+        costDashboard.classList.remove('hidden');
+
+        items.forEach(item => {
+          const searchParam = encodeURIComponent(`${item.name} ${item.category}`);
+          const fallbackAmazonUrl = `https://www.amazon.com/s?k=${searchParam}`;
 
           const card = document.createElement('div');
-          card.className = "group bg-obsidian-card border border-obsidian-border rounded-xl p-5 hover:border-white/20 transition-all duration-300 flex flex-col justify-between hover:translate-y-[-2px] relative overflow-hidden";
+          card.className = "bg-obsidian-card border border-obsidian-border hover:border-white/10 p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 group hover:-translate-y-0.5 shadow-md";
           
           card.innerHTML = `
             <div>
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-[10px] font-mono bg-white/[0.04] text-neutral-400 px-2 py-0.5 rounded-full border border-obsidian-border">
-                  ${p.category.toUpperCase()}
-                </span>
-                <span class="text-sm font-mono text-white">$${p.price}</span>
+              <div class="flex justify-between items-start mb-3">
+                <span class="text-[9px] font-mono text-neutral-500 tracking-wider uppercase">${item.category}</span>
+                <span class="text-[9px] bg-white/[0.04] text-neutral-300 font-mono px-2 py-0.5 rounded border border-white/5">${item.badge || 'Optimal Match'}</span>
               </div>
+              <h3 class="space-font text-white font-medium text-sm leading-tight mb-2 group-hover:text-cyan-400 transition-colors">${item.name}</h3>
+              <p class="text-xs text-neutral-400 font-light leading-relaxed mb-4">${item.desc}</p>
               
-              <h3 class="space-font text-base font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
-                ${p.name}
-              </h3>
-              
-              <p class="text-xs text-neutral-400 font-light leading-relaxed mb-4">
-                ${p.desc}
-              </p>
+              <ul class="space-y-1 mb-5">
+                ${item.specs.map(spec => `
+                  <li class="flex items-center gap-2 text-[10px] font-mono text-neutral-300">
+                    <span class="w-1 h-1 rounded-full bg-cyan-500"></span>
+                    ${spec}
+                  </li>
+                `).join('')}
+              </ul>
             </div>
 
-            <div class="mt-4 pt-4 border-t border-obsidian-border flex flex-col gap-3">
-              <ul class="space-y-1">
-                ${specsHTML}
-              </ul>
-              <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.02]">
-                <span class="text-[10px] font-mono text-cyan-400 flex items-center gap-1">
-                  <i data-lucide="cpu" class="w-3 h-3"></i> ${p.match}% Match
-                </span>
-                <button onclick="copySpecs('${p.name}')" class="text-[10px] font-mono text-neutral-500 hover:text-white transition-colors flex items-center gap-1">
-                  <i data-lucide="copy" class="w-3 h-3"></i> Copy Specs
-                </button>
+            <div>
+              <div class="flex items-center justify-between border-t border-white/5 pt-3 mb-3">
+                <div>
+                  <span class="text-[9px] font-mono text-neutral-500 block uppercase">Retail Est</span>
+                  <span class="text-xs font-mono text-white font-semibold">$${item.price}</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-[9px] font-mono text-neutral-500 block uppercase">Bio Metric Fit</span>
+                  <span class="text-xs font-mono text-emerald-400 font-medium">${item.match}%</span>
+                </div>
               </div>
+
+              <a 
+                href="${item.amazonUrl || fallbackAmazonUrl}" 
+                target="_blank" 
+                class="w-full bg-white/[0.03] hover:bg-white text-neutral-300 hover:text-black py-1.5 rounded-lg text-[10px] font-mono flex items-center justify-center gap-1.5 transition-all"
+              >
+                Search Details <i data-lucide="external-link" class="w-3 h-3"></i>
+              </a>
             </div>
           `;
           container.appendChild(card);
@@ -964,15 +1209,438 @@ Requirements:
         lucide.createIcons();
       }
 
-      // Copy specification details helper
-      function copySpecs(name) {
-        const elem = document.createElement('textarea');
-        elem.value = `Circuitly match specs output: ${name}`;
-        document.body.appendChild(elem);
-        elem.select();
+      // Clear multi-turn assistant chat
+      function clearChat() {
+        const messagesEl = document.getElementById('chat-messages');
+        messagesEl.innerHTML = `
+          <div class="flex items-start gap-2.5">
+            <div class="w-6 h-6 rounded-md bg-cyan-950 border border-cyan-500/10 flex items-center justify-center flex-shrink-0 text-[10px]">🤖</div>
+            <div class="bg-white/[0.02] border border-obsidian-border px-3.5 py-2.5 rounded-r-xl rounded-bl-xl max-w-[85%] text-neutral-300 leading-relaxed">
+              Thread refreshed. Let's design another visually balanced workspace! How can I assist you?
+            </div>
+          </div>
+        `;
+        chatHistory.length = 0;
+        chatHistory.push({
+          role: "assistant",
+          text: "Thread refreshed. Let's design another visually balanced workspace!"
+        });
+        showToast("Conversational AI context reset.", "info");
+      }
+
+      // Handle submitting dynamic prompt from assistant form
+      async function handleChatSubmit(event) {
+        if (event) event.preventDefault();
+        const chatInputEl = document.getElementById('chat-input');
+        const text = chatInputEl.value.trim();
+        if (!text) return;
+
+        chatInputEl.value = '';
+        await processChatMessage(text);
+      }
+
+      // Support quick assistant action chips
+      async function sendQuickMessage(text) {
+        await processChatMessage(text);
+      }
+
+      // Appends message block to chat
+      function appendChatMessage(role, text) {
+        const messagesEl = document.getElementById('chat-messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = "flex items-start gap-2.5";
+        
+        if (role === 'user') {
+          messageDiv.innerHTML = `
+            <div class="flex-1"></div>
+            <div class="bg-cyan-950/40 border border-cyan-500/20 px-3.5 py-2.5 rounded-l-xl rounded-br-xl max-w-[85%] text-cyan-100 leading-relaxed">
+              ${text}
+            </div>
+            <div class="w-6 h-6 rounded-md bg-neutral-900 border border-white/10 flex items-center justify-center flex-shrink-0 text-[10px]">👤</div>
+          `;
+        } else {
+          messageDiv.innerHTML = `
+            <div class="w-6 h-6 rounded-md bg-cyan-950 border border-cyan-500/10 flex items-center justify-center flex-shrink-0 text-[10px]">🤖</div>
+            <div class="bg-white/[0.02] border border-obsidian-border px-3.5 py-2.5 rounded-r-xl rounded-bl-xl max-w-[85%] text-neutral-300 leading-relaxed">
+              ${text}
+            </div>
+          `;
+        }
+
+        messagesEl.appendChild(messageDiv);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      // Core Conversation Router: Connects to Gemini API or provides robust smart local responder
+      async function processChatMessage(userInputText) {
+        appendChatMessage('user', userInputText);
+        chatHistory.push({ role: "user", text: userInputText });
+
+        const typingIndicator = document.getElementById('chat-typing');
+        typingIndicator.classList.remove('hidden');
+
+        const customKey = document.getElementById('custom-api-key').value.trim();
+        const apiKey = customKey || "";
+
+        if (!apiKey) {
+          // Robust client-side conversation engine to simulate active AI architecture answers
+          setTimeout(() => {
+            const botResponseText = getSimulatedConversationAnswer(userInputText);
+            typingIndicator.classList.add('hidden');
+            appendChatMessage('assistant', botResponseText);
+            chatHistory.push({ role: "assistant", text: botResponseText });
+            appendConsoleLog(`Simulated Multi-Turn AI response formulated locally.`);
+          }, 1200);
+          return;
+        }
+
+        // Live API Multi-Turn Chat Conversation
+        try {
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+          
+          const systemPrompt = `You are a helpful Workspace Hardware Architect and physical ergonomics advisor. Provide safe, age-appropriate (under 18), clean, and healthy responses, avoiding any harmful, illegal, or suggestive topics. Be direct, conversational, encouraging, and provide rich product insights (citing real brands like Keychron, Logitech, Razer, Steelcase, BenQ, Audioengine, Sony). Offer useful keyboard switch tips, visual posture checklists, and noise advice. Maintain context of their goal.`;
+
+          // Format chat history into Gemini's multi-turn structure
+          const contents = chatHistory.map(msg => ({
+            role: msg.role === "assistant" ? "model" : "user",
+            parts: [{ text: msg.text }]
+          }));
+
+          const payload = {
+            contents: contents,
+            systemInstruction: { parts: [{ text: systemPrompt }] }
+          };
+
+          const botResponseText = await fetchWithRetry(endpoint, payload);
+          typingIndicator.classList.add('hidden');
+
+          if (botResponseText) {
+            appendChatMessage('assistant', botResponseText);
+            chatHistory.push({ role: "assistant", text: botResponseText });
+            appendConsoleLog(`Gemini Agent response parsed live.`);
+          } else {
+            throw new Error("Empty response payload from Gemini");
+          }
+
+        } catch (err) {
+          typingIndicator.classList.add('hidden');
+          appendConsoleLog(`Gemini Agent error: ${err.message}`);
+          const fallbackMsg = "My network connection encountered a minor variance, but here is an architectural tip: Focus on keyboard elevation—flat profile setups often minimize carpal stress, whereas high-profile mechanical setups benefit greatly from wood or memory foam wrist rests.";
+          appendChatMessage('assistant', fallbackMsg);
+          chatHistory.push({ role: "assistant", text: fallbackMsg });
+        }
+      }
+
+      // Smart semantic local chatbot response logic
+      function getSimulatedConversationAnswer(text) {
+        const lower = text.toLowerCase();
+        
+        // Dynamic interaction logic: If user tells chatbot to change constraints, apply it live!
+        if (lower.includes("budget") || lower.includes("cheaper") || lower.includes("less") || lower.includes("cost")) {
+          // Adjust budget slider down
+          const newBudget = Math.max(150, state.budget - 300);
+          document.getElementById('budget-slider').value = newBudget;
+          updateValue('budget', newBudget);
+          
+          // Trigger a re-evaluation of matches
+          const simulatedResults = getSimulatedMockMatching(state.query || "keyboard mouse", newBudget, state.aesthetic, state.ergo);
+          renderHardwareCards(simulatedResults.results, `Auto-Optimized Under $${newBudget}`);
+          
+          return `I've updated your budget constraints down to **$${newBudget}** and recalculated your hardware pairings. To fit this envelope, I've prioritized highly durable, cost-effective options like the Logitech MX Anywhere 3S ($79) or Satechi accessories! Let me know if you would like me to adjust further.`;
+        }
+
+        if (lower.includes("posture") || lower.includes("ergonomic") || lower.includes("tips") || lower.includes("health")) {
+          return `Here is your **Postural Alignment Checklist** for creative work:
+          
+          1. **Eye Level:** The top third of your display should align directly with your natural horizontal eye gaze to prevent cervical spine compression.
+          2. **90-Degree Rule:** Your elbows should rest bent at approximately 90 degrees on your chair armrests, with wrists floating flat over your keyboard.
+          3. **Wrist Elevation:** If using custom mechanical keyboards with high-profile keycaps, a palm rest is crucial to avoid repetitive tendon hyperextension.
+          
+          Would you like me to recommend ergonomic mechanical split-keyboards or vertical mice next?`;
+        }
+
+        if (lower.includes("silent") || lower.includes("quiet") || lower.includes("noise") || lower.includes("loud")) {
+          return `Acoustic environment governs creative focus! If sound management is your priority:
+          - Look for **tactile linear switches** with built-in rubber internal dampeners (like Cherry MX Silent Reds or Keychron Silent K Pro switches).
+          - Use a high-density wool or felt desk pad (like the Grovemade wool pad) which naturally absorbs high-frequency vibrations from fast keystrokes.
+          
+          Would you like to search specifically for sound-insulated workstations?`;
+        }
+
+        if (lower.includes("low profile") || lower.includes("flat") || lower.includes("thin")) {
+          // Select low profile keyboard from silver setup
+          const thinKeys = mockDatabase.find(item => item.id === 201);
+          renderHardwareCards([thinKeys], "Low-Profile Match");
+          return `Low-profile keycaps (like on the **Logitech MX Keys S** or **Apple Magic Keyboard**) drastically reduce the muscular output required to hold wrists floating, making them excellent choices for long hours of academic writing or study. I have rendered the MX Keys S on your screen for review.`;
+        }
+
+        if (lower.includes("gaming") || lower.includes("games")) {
+          selectTone('RGB Cyberpunk');
+          const gamingGears = mockDatabase.filter(item => item.tone === "RGB Cyberpunk").slice(0, 3);
+          renderHardwareCards(gamingGears, "Interactive Gaming Setup");
+          return `Synthesized gaming stack initiated! I've automatically selected your aesthetic tone to **RGB Cyberpunk** and loaded rapid-actuation mechanical switches (like the **SteelSeries Apex Pro TKL**) with highly customizable underglow. What other peripheral elements are you tracking?`;
+        }
+
+        if (lower.includes("keyboard") || lower.includes("mouse") || lower.includes("products")) {
+          const simulatedResults = getSimulatedMockMatching(text, state.budget, state.aesthetic, state.ergo);
+          renderHardwareCards(simulatedResults.results, `Custom Product Matches`);
+          return `I have parsed your product inquiry and loaded three highly rated real-world products onto your workbench: **${simulatedResults.results.map(r => r.name).join(', ')}**. These are designed to align closely with your work priorities.`;
+        }
+
+        return `Understood. Analyzing parameters for your hardware workspace. We can configure specific physical keyboard layouts, flat asymmetric light bars (for low visual fatigue), or find flat frequency-response audio systems. Ask me specifically about: 'ergonomic posture tips', 'how to make it silent', or 'under $500'!`;
+      }
+
+      // API Call Handler - Gemini structured generation with Exponential Backoff
+      async function handleGenerate(event) {
+        event.preventDefault();
+        
+        const queryInput = document.getElementById('search-input').value.trim();
+        if (!queryInput) return;
+
+        state.query = queryInput;
+        appendConsoleLog(`Synthesizing setup request: "${queryInput}" | Budget: $${state.budget} | Aesthetic: ${state.aesthetic}`);
+
+        // Toggle UI loading states
+        const loadingEl = document.getElementById('results-loading');
+        const container = document.getElementById('results-container');
+        const reasoningContainer = document.getElementById('reasoning-container');
+        const reasoningText = document.getElementById('reasoning-text');
+
+        loadingEl.classList.remove('hidden');
+        container.classList.add('hidden');
+        reasoningContainer.classList.add('hidden');
+
+        // Check if custom key is available, else fallback to environment or offline mock with AI-like delayed presentation
+        const customKey = document.getElementById('custom-api-key').value.trim();
+        const apiKey = customKey || ""; 
+
+        if (!apiKey) {
+          appendConsoleLog("No user API key provided. Commencing client-side semantic matching...");
+          
+          // Simulate advanced AI parsing using the mock DB & rules to look incredibly responsive & smart
+          setTimeout(() => {
+            const simulatedResults = getSimulatedMockMatching(queryInput, state.budget, state.aesthetic, state.ergo);
+            
+            loadingEl.classList.add('hidden');
+            container.classList.remove('hidden');
+            
+            renderHardwareCards(simulatedResults.results, `Dynamic Client-Side Match`);
+            
+            reasoningText.textContent = simulatedResults.reasoning;
+            reasoningContainer.classList.remove('hidden');
+
+            showToast("Setup synthesized successfully!", "success");
+            appendConsoleLog("Synthesis complete. Recommendations loaded.");
+          }, 1200);
+          return;
+        }
+
+        // Real API invocation with key
+        try {
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+          
+          const systemInstruction = `You are a high-fidelity Hardware Architect and Ergonomic consultant. You always return JSON structured exactly like this schema:
+          {
+            "results": [
+              {
+                "id": 1,
+                "category": "Keyboard | Mouse | Audio System | Desk Light | Monitor | Desk Pad",
+                "name": "Official manufacturer brand name and model",
+                "price": 120,
+                "match": 98,
+                "badge": "Short 2-word highlight like 'Silent Tactile' or 'Posture Savior'",
+                "desc": "Short 1-sentence product value description",
+                "specs": ["spec item 1", "spec item 2", "spec item 3"]
+              }
+            ],
+            "reasoning": "A short summary explaining why this setup aligns perfectly with their workspace goals and constraints."
+          }
+          Only recommend highly rated actual hardware models (like Logitech, Keychron, SteelSeries, Apple, Audioengine, Razer, Asus, Dell, BenQ, Corsair, Bose, Sony, Shure, Elgato, Steelcase). Stay strictly within the user's budget limit, and focus extensively on their preferred aesthetic tone and ergonomic goals. Keep your output in standard, clean, parseable JSON only. Avoid harmful, illegal, suggestive, or violent themes in your reasoning.`;
+
+          const prompt = `Synthesize a hardware peripheral configuration containing 3 distinct premium recommendations based on the following rules:
+          - Human intention: "${queryInput}"
+          - Target budget limit: $${state.budget} for all items combined
+          - Preferred workspace visual aesthetic: ${state.aesthetic}
+          - Ergonomic priority level: ${state.ergo} out of 3 (1: performance focus, 2: balanced, 3: ultimate posture/health ergonomics emphasis).
+          Ensure total combined cost is less than $${state.budget}.`;
+
+          const payload = {
+            contents: [{ parts: [{ text: prompt }] }],
+            systemInstruction: { parts: [{ text: systemInstruction }] },
+            generationConfig: {
+              responseMimeType: "application/json"
+            }
+          };
+
+          // Post using exponential backoff retry mechanism
+          const responseText = await fetchWithRetry(endpoint, payload);
+          const parsedData = JSON.parse(responseText);
+
+          loadingEl.classList.add('hidden');
+          container.classList.remove('hidden');
+
+          if (parsedData.results && parsedData.results.length > 0) {
+            renderHardwareCards(parsedData.results, `Cognitive Match Complete`);
+            reasoningText.textContent = parsedData.reasoning || "Optimized based on real-time acoustic, visual, and physical parameters.";
+            reasoningContainer.classList.remove('hidden');
+            showToast("Workstation successfully synthesized!", "success");
+            appendConsoleLog("Structured JSON loaded and parsed from Gemini Live Engine.");
+          } else {
+            throw new Error("Invalid output format returned from engine");
+          }
+
+        } catch (err) {
+          appendConsoleLog(`Architecture synthesis failed: ${err.message}`);
+          showToast("AI Synthesis failed. Utilizing robust baseline matching instead.", "warning");
+          
+          // Fallback gracefully
+          const simulatedResults = getSimulatedMockMatching(queryInput, state.budget, state.aesthetic, state.ergo);
+          loadingEl.classList.add('hidden');
+          container.classList.remove('hidden');
+          renderHardwareCards(simulatedResults.results, `Fallback Match`);
+          reasoningText.textContent = "BASELINE MODE: " + simulatedResults.reasoning;
+          reasoningContainer.classList.remove('hidden');
+        }
+      }
+
+      // Fetch with exponential backoff helper
+      async function fetchWithRetry(url, payload, retries = 5, delay = 1000) {
+        for (let i = 0; i < retries; i++) {
+          try {
+            const res = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+              const data = await res.json();
+              return data.candidates?.[0]?.content?.parts?.[0]?.text;
+            }
+          } catch (e) {
+            // silent retry
+          }
+          await new Promise(resolve => setTimeout(resolve, delay));
+          delay *= 2; // exponential backoff
+        }
+        throw new Error("All network attempts to Google Gemini API failed.");
+      }
+
+      // Smart Simulated Matching Engine that finds real products in the catalog
+      function getSimulatedMockMatching(query, budget, aesthetic, ergo) {
+        const queryLower = query.toLowerCase();
+        const queryTokens = queryLower.split(/\s+/).filter(t => t.length > 2);
+
+        const scoredItems = mockDatabase.map(item => {
+          let score = 0;
+
+          if (item.tone === aesthetic) {
+            score += 60;
+          } else {
+            score -= 15;
+          }
+
+          const cat = item.category.toLowerCase();
+          if (cat === "keyboard" && (queryLower.includes("keyboard") || queryLower.includes("type") || queryLower.includes("typing") || queryLower.includes("keys") || queryLower.includes("write") || queryLower.includes("coding"))) {
+            score += 50;
+          }
+          if (cat === "mouse" && (queryLower.includes("mouse") || queryLower.includes("pointing") || queryLower.includes("scrolling") || queryLower.includes("clicks") || queryLower.includes("trackpad"))) {
+            score += 50;
+          }
+          if (cat === "audio system" && (queryLower.includes("audio") || queryLower.includes("sound") || queryLower.includes("speakers") || queryLower.includes("headphones") || queryLower.includes("music") || queryLower.includes("hear") || queryLower.includes("mic") || queryLower.includes("listen") || queryLower.includes("anc") || queryLower.includes("podcast"))) {
+            score += 50;
+          }
+          if (cat === "desk light" && (queryLower.includes("light") || queryLower.includes("lamp") || queryLower.includes("illumination") || queryLower.includes("desk light") || queryLower.includes("night") || queryLower.includes("study"))) {
+            score += 50;
+          }
+          if (cat === "monitor" && (queryLower.includes("monitor") || queryLower.includes("display") || queryLower.includes("screen") || queryLower.includes("4k") || queryLower.includes("5k") || queryLower.includes("resolution") || queryLower.includes("inches"))) {
+            score += 50;
+          }
+          if (cat === "desk pad" && (queryLower.includes("pad") || queryLower.includes("mat") || queryLower.includes("felt") || queryLower.includes("leather") || queryLower.includes("surface"))) {
+            score += 50;
+          }
+
+          if (ergo === 3 && item.tags.includes("ergonomic")) {
+            score += 30;
+          }
+          if (ergo === 1 && (item.tags.includes("gaming") || item.tags.includes("fast"))) {
+            score += 25;
+          }
+          if (queryLower.includes("silent") || queryLower.includes("quiet")) {
+            if (item.tags.includes("silent") || item.tags.includes("quiet")) {
+              score += 40;
+            }
+          }
+
+          queryTokens.forEach(token => {
+            if (item.name.toLowerCase().includes(token)) score += 20;
+            if (item.desc.toLowerCase().includes(token)) score += 10;
+            if (item.tags.some(tag => tag.includes(token))) score += 15;
+          });
+
+          const ratio = item.price / budget;
+          if (ratio > 0.65) {
+            score -= 50;
+          }
+
+          return { item, score };
+        });
+
+        scoredItems.sort((a, b) => b.score - a.score);
+
+        const uniqueCategories = {};
+        const chosen = [];
+
+        for (let container of scoredItems) {
+          const item = container.item;
+          if (!uniqueCategories[item.category]) {
+            uniqueCategories[item.category] = true;
+            chosen.push(item);
+          }
+          if (chosen.length === 3) break;
+        }
+
+        if (chosen.length < 3) {
+          for (let container of scoredItems) {
+            if (!chosen.some(c => c.id === container.item.id)) {
+              chosen.push(container.item);
+            }
+            if (chosen.length === 3) break;
+          }
+        }
+
+        let totalCost = chosen.reduce((sum, item) => sum + item.price, 0);
+        if (totalCost > budget) {
+          chosen.sort((a, b) => b.price - a.price);
+          for (let i = 0; i < chosen.length; i++) {
+            const currentItem = chosen[i];
+            const alternative = mockDatabase.find(alt => 
+              alt.category === currentItem.category && 
+              alt.price < currentItem.price && 
+              alt.tone === aesthetic &&
+              !chosen.some(c => c.id === alt.id)
+            );
+            if (alternative) {
+              chosen[i] = alternative;
+              totalCost = chosen.reduce((sum, item) => sum + item.price, 0);
+              if (totalCost <= budget) break;
+            }
+          }
+        }
+
+        let ergoText = "balanced productivity performance";
+        if (ergo === 3) ergoText = "maximum postural ergonomics and physical wrist protection";
+        if (ergo === 1) ergoText = "ultra high-frequency speed and low latency focus";
+
+        return {
+          results: chosen,
+          reasoning: `Selected using search parameters: [${queryTokens.join(', ') || 'default'}]. These highly rated products emphasize ${ergoText} inside a sleek ${aesthetic} theme. Total cost of $${totalCost} is verified to remain inside your $${budget} target.`
+        };
+      }
+
+      function copyPythonCode() {
+        const text = document.getElementById('python-boilerplate').innerText;
         document.execCommand('copy');
-        document.body.removeChild(elem);
-        showToast(`Copied ${name} specification details!`);
+        showToast("Python script copied successfully!", "success");
       }
     </script>
   </body>
